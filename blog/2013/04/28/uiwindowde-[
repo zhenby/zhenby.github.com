@@ -1,0 +1,761 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS,UIWindow,UIWebView,Keyboard," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
+问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
+前提
+项目中使用了另一个 UIWindow (在这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIWindow的一个兼容性问题">
+<meta property="og:url" content="http://zhenby.com/blog/2013/04/28/uiwindowde-[">
+<meta property="og:site_name" content="zhenby's blog">
+<meta property="og:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
+问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
+前提
+项目中使用了另一个 UIWindow (在这">
+<meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png">
+<meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%889.56.31.png">
+<meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png">
+<meta property="og:updated_time" content="2016-02-25T09:52:24.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UIWindow的一个兼容性问题">
+<meta name="twitter:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
+问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
+前提
+项目中使用了另一个 UIWindow (在这">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> UIWindow的一个兼容性问题 | zhenby's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-32727809-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">zhenby's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-iread">
+          <a href="/iread" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            我读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                UIWindow的一个兼容性问题
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-04-28T12:53:00+08:00" content="2013-04-28">
+              2013-04-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  </p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在<strong>iOS 5.1或者以下的系统版本</strong>中，可能会出现在 UIWebView中触发键盘时，<strong>键盘处于不可见的状态</strong>。</p>
+<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><ul>
+<li>项目中使用了另一个 UIWindow (在这里给这个额外的 UIWindow 取个代号：HighLevelWindow)</li>
+<li>设置此 HighLevelWindow 的 windowLevel 大于 UIWindowLevelNormal，确保在显示时能覆盖在应用默认的 UIWindow 上面 (UIWindowLevelNormal 级别为应用默认的 UIWindow 的 windowLevel 取值)</li>
+<li>HighLevelWindow 中的 rootViewController 里面包含了一个 UIWebView  </li>
+<li>在显示此 HighLevelWindow 时，已经调用<code>makeKeyAndVisible</code>方法将 HighLevelWindow 设置成应用的keyWindow，确保能正常的接收到触摸事件</li>
+</ul>
+<h3 id="重现步骤"><a href="#重现步骤" class="headerlink" title="重现步骤"></a>重现步骤</h3><ol>
+<li>使用 iOS 5.1或者以下版本的设备运行应用，在应用默认的 UIWindow 中触发过键盘，如触发过一个输入框(UITextField)，见下图：</li>
+</ol>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png" alt="在默认UIWindow中触发键盘"></p>
+<p>2.调出 HighLevelWindow，将 HighLevelWindow 中的 UIWebView 载入 google.com，点击 google 的搜索输入框，会发现网页虽然上推了，但是键盘处于不可见的状态，见下图：</p>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%889.56.31.png" alt="键盘处于不可见的状态"></p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>上 google 搜了很久，给出的解决方案都是说没把 HighLevelWindow 设置成应用的 KeyWindow，导致接收不到屏幕的触摸事件，但是从 google 网页上推可以看出，其实 HighLevelWindow 是可以接收到触摸事件的，而且我已经确定把 HightLevelWindow 设置成应用的 KeyWindow 了。  </p>
+<p>现在的症状就是键盘在默认的 UIWindow 中触发过后，在 HinhLevelWindow 中再次触发，键盘其实是被挡在了 HighLevelWindow 后面，处于不可见，不可点击的状态。(此症状可通过将 HighLevelWindow 的 frame.size 设置成只有屏幕一半大小来确定)  </p>
+<p>尝试了各种方法，都是不行的，而且从 iOS 6.0 开始，此 bug 是不存在的，那更可以确定是一个兼容性的问题了。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>我突然想起，就在之前项目还没改用 UIWebView 前，使用一般的 UITextField 输入框是可以正常的显示键盘的，于是，就有以下这种取巧的解决方案：<br><strong>在包含了 UIWebView 的 UIViewController 显示时(<code>viewDidAppear:</code> 方法调用时)，插入一个 UITextField，迅速的获取焦点，然后取消焦点，删除此 UITextFiled </strong>，关键代码如下：<br><figure class="highlight objc"><figcaption><span>- FixedBugWindowViewController.m</span></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line">	    </span><br><span class="line">	<span class="comment">// 在系统版本低于 iOS 6.0 时才做此操作</span></span><br><span class="line">	<span class="keyword">if</span> ([[[<span class="built_in">UIDevice</span> currentDevice] systemVersion] floatValue] &lt; <span class="number">6.0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 新建一个 UITextField，并添加到视图中</span></span><br><span class="line">		<span class="built_in">UITextField</span> *textFieldFixKeyBoardBug = [[<span class="built_in">UITextField</span> alloc] initWithFrame:<span class="keyword">self</span>.view.bounds];</span><br><span class="line">		[<span class="keyword">self</span>.view addSubview:textFieldFixKeyBoardBug];</span><br><span class="line">								        </span><br><span class="line">		<span class="comment">// 获取焦点，释放焦点</span></span><br><span class="line">		[textFieldFixKeyBoardBug becomeFirstResponder];</span><br><span class="line">		[textFieldFixKeyBoardBug resignFirstResponder];</span><br><span class="line">														        </span><br><span class="line">		<span class="comment">// 将 UITextField 从视图中移除，并释放</span></span><br><span class="line">		[textFieldFixKeyBoardBug removeFromSuperview];</span><br><span class="line">		[textFieldFixKeyBoardBug release];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>加上以上代码后，可以正常的显示键盘了。</p>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png" alt="可正常显示键盘"></p>
+<h2 id="不单单是UIWebView，不单单是键盘"><a href="#不单单是UIWebView，不单单是键盘" class="headerlink" title="不单单是UIWebView，不单单是键盘"></a>不单单是UIWebView，不单单是键盘</h2><ul>
+<li>不单单是 UIWebView，我在使用 MFMessageComposeViewController 时也遇过这个问题，类似的 MFMailComposeViewController 应该也会出现这个问题，可以使用相同的方法修复</li>
+<li>不单单是键盘，在 UIWebView 中，页面有一个下拉框，会显示一个 UIPickerView，此 UIPickerView 也处于被隐藏，不可见的状态，也可以使用此方法修复</li>
+</ul>
+<h2 id="Demo源码"><a href="#Demo源码" class="headerlink" title="Demo源码"></a>Demo源码</h2><p>Demo源码地址：<a href="https://github.com/zhenby/UIWindowKeyboardBug" target="_blank" rel="external">https://github.com/zhenby/UIWindowKeyboardBug</a></p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS-UIWindow-UIWebView-Keyboard/" rel="tag">#iOS,UIWindow,UIWebView,Keyboard</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2013/03/05/han-shu-yu-fang-fa/" rel="next" title="函数vs方法">
+                <i class="fa fa-chevron-left"></i> 函数vs方法
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2013/05/16/cordova-for-ios/" rel="prev" title="浅析 Cordova for iOS">
+                浅析 Cordova for iOS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/"
+           data-title="UIWindow的一个兼容性问题" data-url="http://zhenby.com//blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="zhenby" />
+          <p class="site-author-name" itemprop="name">zhenby</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#描述"><span class="nav-number">1.1.</span> <span class="nav-text">描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#前提"><span class="nav-number">1.2.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重现步骤"><span class="nav-number">1.3.</span> <span class="nav-text">重现步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决"><span class="nav-number">3.</span> <span class="nav-text">解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不单单是UIWebView，不单单是键盘"><span class="nav-number">4.</span> <span class="nav-text">不单单是UIWebView，不单单是键盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo源码"><span class="nav-number">5.</span> <span class="nav-text">Demo源码</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhenby</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"zhenby"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

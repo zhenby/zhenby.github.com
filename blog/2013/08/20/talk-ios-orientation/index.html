@@ -1,0 +1,749 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS, Orientation," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="一般的应用，只会支持竖屏正方向一个方向，支持多个屏幕方向的应用还是比较少的。不过我在工作的项目中，跟这个屏幕方向接触比较多，因为我们是一个有界面的 SDK，要让接入方接入的，一开始做没什么经验，考虑到接入方本身的屏幕方向可能是多种的，所以我们直接上来就支持四个方向，然后就是各种转屏的问题，90度旋转、180读旋转、270度旋转，测试手都快转断了。后来觉的根本没必要，浪费了很多时间在解决屏幕方向的问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 屏幕方向那点事儿">
+<meta property="og:url" content="http://zhenby.com/blog/2013/08/20/talk-ios-orientation/index.html">
+<meta property="og:site_name" content="zhenby's blog">
+<meta property="og:description" content="一般的应用，只会支持竖屏正方向一个方向，支持多个屏幕方向的应用还是比较少的。不过我在工作的项目中，跟这个屏幕方向接触比较多，因为我们是一个有界面的 SDK，要让接入方接入的，一开始做没什么经验，考虑到接入方本身的屏幕方向可能是多种的，所以我们直接上来就支持四个方向，然后就是各种转屏的问题，90度旋转、180读旋转、270度旋转，测试手都快转断了。后来觉的根本没必要，浪费了很多时间在解决屏幕方向的问">
+<meta property="og:image" content="http://pic.zhenby.com/PlistOrientation.png">
+<meta property="og:image" content="http://pic.zhenby.com/TargetSummary.png">
+<meta property="og:updated_time" content="2016-02-25T09:44:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 屏幕方向那点事儿">
+<meta name="twitter:description" content="一般的应用，只会支持竖屏正方向一个方向，支持多个屏幕方向的应用还是比较少的。不过我在工作的项目中，跟这个屏幕方向接触比较多，因为我们是一个有界面的 SDK，要让接入方接入的，一开始做没什么经验，考虑到接入方本身的屏幕方向可能是多种的，所以我们直接上来就支持四个方向，然后就是各种转屏的问题，90度旋转、180读旋转、270度旋转，测试手都快转断了。后来觉的根本没必要，浪费了很多时间在解决屏幕方向的问">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS 屏幕方向那点事儿 | zhenby's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-32727809-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">zhenby's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-iread">
+          <a href="/iread" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            我读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS 屏幕方向那点事儿
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-08-20T19:26:00+08:00" content="2013-08-20">
+              2013-08-20
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/08/20/talk-ios-orientation/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/08/20/talk-ios-orientation/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>一般的应用，只会支持竖屏正方向一个方向，支持多个屏幕方向的应用还是比较少的。<br>不过我在工作的项目中，跟这个屏幕方向接触比较多，因为我们是一个有界面的 SDK，要让接入方接入的，一开始做没什么经验，考虑到接入方本身的屏幕方向可能是多种的，所以我们直接上来就支持四个方向，然后就是各种转屏的问题，90度旋转、180读旋转、270度旋转，测试手都快转断了。<br>后来觉的根本没必要，浪费了很多时间在解决屏幕方向的问题上，后来就简化到让接入方直接设置支持某个方向了。  </p>
+<p>一般的应用不用搞的这么的复杂，只要支持一两个屏幕方向就可以了。我也做一下跟屏幕方向有关的几点总结，希望能帮到一些开发者！  </p>
+<h2 id="系统屏幕方向枚举"><a href="#系统屏幕方向枚举" class="headerlink" title="系统屏幕方向枚举"></a>系统屏幕方向枚举</h2><p>通过查看文档，用于控制系统屏幕方向的枚举如下：<br><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// iOS 6 之前用于控制屏幕方向的枚举</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> &#123;</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationPortrait</span>           = <span class="built_in">UIDeviceOrientationPortrait</span>,</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationPortraitUpsideDown</span> = <span class="built_in">UIDeviceOrientationPortraitUpsideDown</span>,</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationLandscapeLeft</span>      = <span class="built_in">UIDeviceOrientationLandscapeRight</span>,</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationLandscapeRight</span>     = <span class="built_in">UIDeviceOrientationLandscapeLeft</span></span><br><span class="line">&#125; <span class="built_in">UIInterfaceOrientation</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// iOS 6 及之后版本用于控制屏幕方向的枚举</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">enum</span> &#123;</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskPortrait</span> = (<span class="number">1</span> &lt;&lt; <span class="built_in">UIInterfaceOrientationPortrait</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskLandscapeLeft</span> = (<span class="number">1</span> &lt;&lt; <span class="built_in">UIInterfaceOrientationLandscapeLeft</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskLandscapeRight</span> = (<span class="number">1</span> &lt;&lt; <span class="built_in">UIInterfaceOrientationLandscapeRight</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskPortraitUpsideDown</span> = (<span class="number">1</span> &lt;&lt; <span class="built_in">UIInterfaceOrientationPortraitUpsideDown</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskLandscape</span> = (<span class="built_in">UIInterfaceOrientationMaskLandscapeLeft</span> | <span class="built_in">UIInterfaceOrientationMaskLandscapeRight</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskAll</span> = (<span class="built_in">UIInterfaceOrientationMaskPortrait</span> | <span class="built_in">UIInterfaceOrientationMaskLandscapeLeft</span> |</span><br><span class="line">			   <span class="built_in">UIInterfaceOrientationMaskLandscapeRight</span> | <span class="built_in">UIInterfaceOrientationMaskPortraitUpsideDown</span>),</span><br><span class="line">    <span class="built_in">UIInterfaceOrientationMaskAllButUpsideDown</span> = (<span class="built_in">UIInterfaceOrientationMaskPortrait</span> | <span class="built_in">UIInterfaceOrientationMaskLandscapeLeft</span> |</span><br><span class="line">						<span class="built_in">UIInterfaceOrientationMaskLandscapeRight</span>),</span><br><span class="line">&#125; <span class="built_in">UIInterfaceOrientationMask</span>;</span><br></pre></td></tr></table></figure></p>
+<p>可以发现：</p>
+<ul>
+<li>iOS 6 及之后版本使用的 UIInterfaceOrientationMask 类型来控制屏幕屏幕方向，该类型也新增加了几个枚举取值，可用一个枚举取值来代表多个屏幕方向。  </li>
+<li>四个基本屏幕方向（上、下、左、右）中，<code>UIInterfaceOrientationMask = (1 &lt;&lt; UIInterfaceOrientation)</code>，所以，如果你的应用中需要动态的将 UIInterfaceOrientation 类型转换成 UIInterfaceOrientationMask 类型的话，只需做一下上面的转换即可，不需要通过 switch 来判断再转换。   </li>
+</ul>
+<h2 id="怎么控制屏幕方向"><a href="#怎么控制屏幕方向" class="headerlink" title="怎么控制屏幕方向"></a>怎么控制屏幕方向</h2><p>在 iOS 的应用中，有多种方式可以控制界面的屏幕方向，有全局的，有针对 UIWindow 中界面的控制，也有针对单个界面。  </p>
+<h3 id="单个界面控制"><a href="#单个界面控制" class="headerlink" title="单个界面控制"></a>单个界面控制</h3><h4 id="iOS-6之前"><a href="#iOS-6之前" class="headerlink" title="iOS 6之前"></a>iOS 6之前</h4><p>在 iOS 6 之前，单个界面的屏幕方向控制，都使用 UIViewController 类中的这个方法：  </p>
+<figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 是否支持旋转到某个屏幕方向</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)shouldAutorotateToInterfaceOrientation:(<span class="built_in">UIInterfaceOrientation</span>)toInterfaceOrientation</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> ((toInterfaceOrientation == <span class="built_in">UIInterfaceOrientationLandscapeRight</span>) |</span><br><span class="line">	            (toInterfaceOrientation == <span class="built_in">UIInterfaceOrientationLandscapeLeft</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>默认情况下，此方法只有参数为 UIInterfaceOrientationPortrait 时，返回值才为真，即默认只支持竖屏向上。上面的例子中，表示支持横屏向右及横屏向左两个方向。    </p>
+<h3 id="iOS-6及之后的版本"><a href="#iOS-6及之后的版本" class="headerlink" title="iOS 6及之后的版本"></a>iOS 6及之后的版本</h3><p>在 iOS 6 及之后的版本，单个界面的屏幕方向控制，要使用 UIViewController 在 iOS 6.0 中新增加的两个方法：<br><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 是否支持转屏</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)shouldAutorotate</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 支持的屏幕方向，此处可直接返回 UIInterfaceOrientationMask 类型</span></span><br><span class="line"><span class="comment">// 也可以返回多个 UIInterfaceOrientationMask 取或运算后的值</span></span><br><span class="line">- (<span class="built_in">NSUInteger</span>)supportedInterfaceOrientations</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">UIInterfaceOrientationMaskLandscape</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>其中 <code>- supportedInterfaceOrientations</code> 方法在 iPad 中默认取值为 UIInterfaceOrientationMaskAll，即默认支持所有屏幕方向；而 iPhone 跟 iPod Touch 的默认取值为 UIInterfaceOrientationMaskAllButUpsideDown，即支持除竖屏向下以外的三个方向。<br>在设备屏幕旋转时，系统会调用 <code>- shouldAutorotate</code> 方法检查当前界面是否支持旋转，只有 <code>- shouldAutorotate</code> 返回 YES 的时候，<code>- supportedInterfaceOrientations</code> 方法才会被调用，以确定是否需要旋转界面。  </p>
+<h3 id="UIWindow中的界面控制-iOS-6及以上版本才有效"><a href="#UIWindow中的界面控制-iOS-6及以上版本才有效" class="headerlink" title="UIWindow中的界面控制(iOS 6及以上版本才有效)"></a>UIWindow中的界面控制(iOS 6及以上版本才有效)</h3><p>在 iOS 6 中，UIApplicationDelegate 协议中添加了一个可以指定 UIWindow 中的界面的屏幕方向的方法：<br><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">NSUInteger</span>)application:(<span class="built_in">UIApplication</span> *)application</span><br><span class="line">        supportedInterfaceOrientationsForWindow:(<span class="built_in">UIWindow</span> *)window</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">UIInterfaceOrientationMaskLandscape</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此方法的默认值为 Info.plist 中配置的 Supported interface orientations 项的值。<br>一般我们都不会创建其他的 UIWindow，所以通过这个方法，也可以达到全局控制。  </p>
+<h3 id="全局控制"><a href="#全局控制" class="headerlink" title="全局控制"></a>全局控制</h3><p>在应用的 Info.plist 文件中，有一个 Supported interface orientations 的配置，可以配置整个应用的屏幕方向，如下图：<br><img src="http://pic.zhenby.com/PlistOrientation.png" alt="Supported interface orientations"></p>
+<p>此配置其实跟工程中 Target 的 Summary 界面中的 Supported interface orientations 配置是一致的，修改任意一边，另一个边都会同步的修改。<br><img src="http://pic.zhenby.com/TargetSummary.png" alt="Target Summary"></p>
+<p>并且，应用在启动时，会使用 Info.plist 中的 Supported interface orientations 项中的第一个值作为启动动画的屏幕方向。按照此处截图的取值，第一个取值为 <code>Portrait(top home button)</code>，即竖屏反方向，所以此应用在启动时，会使用竖屏反方向显示启动动画。  </p>
+<h2 id="多种控制共存的规则"><a href="#多种控制共存的规则" class="headerlink" title="多种控制共存的规则"></a>多种控制共存的规则</h2><ul>
+<li>一个界面最后支持的屏幕方向，是取 <code>(全局控制 ∩ UIWindow 中的界面控制 ∩ 单个界面控制)</code> 的交集，如果全局控制支持所有屏幕方向，UIWindow 中的界面控制支持横屏，当个界面中只是支持横屏向右，那么最后界面只会以横屏向右显示，并且不支持旋转到其他的方向。  </li>
+<li>如果以上三种控制支持的屏幕方向最后的交集为空，iOS 5 跟 iOS 6 的处理有点不同，在 iOS 6 下，甚至会直接抛出 <code>UIApplicationInvalidInterfaceOrientationException</code> 的异常，然后直接崩溃，所以还是要保持这三个值的交集为非空。  </li>
+</ul>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS-Orientation/" rel="tag">#iOS, Orientation</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2013/05/16/cordova-for-ios/" rel="next" title="浅析 Cordova for iOS">
+                <i class="fa fa-chevron-left"></i> 浅析 Cordova for iOS
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2013/09/12/blink/" rel="prev" title="第一个收费App——BLink">
+                第一个收费App——BLink <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="/blog/2013/08/20/talk-ios-orientation/"
+           data-title="iOS 屏幕方向那点事儿" data-url="http://zhenby.com//blog/2013/08/20/talk-ios-orientation/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="zhenby" />
+          <p class="site-author-name" itemprop="name">zhenby</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统屏幕方向枚举"><span class="nav-number">1.</span> <span class="nav-text">系统屏幕方向枚举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么控制屏幕方向"><span class="nav-number">2.</span> <span class="nav-text">怎么控制屏幕方向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单个界面控制"><span class="nav-number">2.1.</span> <span class="nav-text">单个界面控制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#iOS-6之前"><span class="nav-number">2.1.1.</span> <span class="nav-text">iOS 6之前</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iOS-6及之后的版本"><span class="nav-number">2.2.</span> <span class="nav-text">iOS 6及之后的版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIWindow中的界面控制-iOS-6及以上版本才有效"><span class="nav-number">2.3.</span> <span class="nav-text">UIWindow中的界面控制(iOS 6及以上版本才有效)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全局控制"><span class="nav-number">2.4.</span> <span class="nav-text">全局控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多种控制共存的规则"><span class="nav-number">3.</span> <span class="nav-text">多种控制共存的规则</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhenby</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"zhenby"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>

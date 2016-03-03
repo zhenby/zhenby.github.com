@@ -1,0 +1,758 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS, Objective-C," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="问题一个项目中使用了一个包含 category 的静态库，但是此项目在运行过程中，该静态库调用 category 增加的方法处，却报 selector not recognized 异常。  
+最佳方案：方案四，赶时间的可以直接查看方案四；
+方案一将 category 文件跟静态库一起导入到工程中。  
+缺点笨，而且多余，在多个地方中存在同一份文件，可能会带来不一致。  
+方案二不使用 categ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用一个包含category的静态库">
+<meta property="og:url" content="http://zhenby.com/blog/2012/08/13/zai-jing-tai-ku-zhong-shi-yong-category/index.html">
+<meta property="og:site_name" content="zhenby's blog">
+<meta property="og:description" content="问题一个项目中使用了一个包含 category 的静态库，但是此项目在运行过程中，该静态库调用 category 增加的方法处，却报 selector not recognized 异常。  
+最佳方案：方案四，赶时间的可以直接查看方案四；
+方案一将 category 文件跟静态库一起导入到工程中。  
+缺点笨，而且多余，在多个地方中存在同一份文件，可能会带来不一致。  
+方案二不使用 categ">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/632302ecgw1dzm7dnuk5vj.jpg">
+<meta property="og:updated_time" content="2016-02-25T10:10:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用一个包含category的静态库">
+<meta name="twitter:description" content="问题一个项目中使用了一个包含 category 的静态库，但是此项目在运行过程中，该静态库调用 category 增加的方法处，却报 selector not recognized 异常。  
+最佳方案：方案四，赶时间的可以直接查看方案四；
+方案一将 category 文件跟静态库一起导入到工程中。  
+缺点笨，而且多余，在多个地方中存在同一份文件，可能会带来不一致。  
+方案二不使用 categ">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"hide"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 使用一个包含category的静态库 | zhenby's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-32727809-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">zhenby's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-iread">
+          <a href="/iread" rel="section">
+            
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+            
+            我读
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+      
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用一个包含category的静态库
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2012-08-13T12:05:00+08:00" content="2012-08-13">
+              2012-08-13
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2012/08/13/zai-jing-tai-ku-zhong-shi-yong-category/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/08/13/zai-jing-tai-ku-zhong-shi-yong-category/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><p>一个项目中使用了一个包含 category 的静态库，但是此项目在运行过程中，该静态库调用 category 增加的方法处，却报 selector not recognized 异常。  </p>
+<p>最佳方案：方案四，赶时间的可以直接查看方案四；</p>
+<h2 id="方案一"><a href="#方案一" class="headerlink" title="方案一"></a>方案一</h2><p>将 category 文件跟静态库一起导入到工程中。  </p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>笨，而且多余，在多个地方中存在同一份文件，可能会带来不一致。  </p>
+<h2 id="方案二"><a href="#方案二" class="headerlink" title="方案二"></a>方案二</h2><p>不使用 category，将 category 中新增加的方法增加一个参数，此参数就是 category 扩展的类的实例，例如要扩展 NSDictionary，要增加一个<code>(NSString *)JSONString</code> 方法，那么将此方法修改成<code>(NSString *)JSONStringWithDict: (NSDictionary *)dict</code>，也可以实现想要的效果。  </p>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><p>如果是自己写的 category ，修改起来还比较简单 ，但是如果是开源项目中包含的 category，改动的工作量会很大；<br>需要额外的类，而且会导致使用 category 的好处尽失。  </p>
+<h2 id="问题原因"><a href="#问题原因" class="headerlink" title="问题原因"></a>问题原因</h2><p>上面的两个方案是在搞不清楚那个错误产生的原因时使用的两个简单、直接的方法，但是都太麻烦了。苹果官方文档中的这个 <a href="http://developer.apple.com/library/mac/#qa/qa1490/_index.html" target="_blank" rel="external">Q&amp;A QA1490:Building Objective-C static libraries with categories</a> 已经说明了这个问题产生的原因：</p>
+<blockquote>
+<p>这个异常是因为标准 UNIX 静态库、linker 以及 Objective-C 的动态性三者之间的实现导致的，Objective-C 不会为方法定义 linker symbols，它只会为每一个类定义 linker symbols。如果你使用 category 扩展了一个已经存在的类，那么 linker 不会将已有类的实现跟 category 的实现连接起来，这就导致了调用静态库中 category 中新增加的方法时抛出 selector not recognized 的异常。</p>
+</blockquote>
+<h2 id="方案三"><a href="#方案三" class="headerlink" title="方案三"></a>方案三</h2><p>在使用静态库的 target 要将 -ObjC 选项传递给 linker，这个标志将会使得 linker 将静态库中原始类及 category 的类文件都载入！</p>
+<h3 id="设置这个-ObjC-选项的具体步骤"><a href="#设置这个-ObjC-选项的具体步骤" class="headerlink" title="设置这个 -ObjC 选项的具体步骤"></a>设置这个 -ObjC 选项的具体步骤</h3><p>在 Xcode 中，查看使用了静态库的那个 target 的 Building Settings，然后找到 Linking 类别中的 Other Linker Flags 选项，设置其值为 -ObjC ；<br>不过，设置 -ObjC 选项对于 iOS 程序来说有时是不够的，这是因为 linker 中存在一个 bug，所以还是可能会在 -ObjC 的情况下导致 selector not recognized 的异常，为了避免这个 bug，在 Other Linker Flags 中，我们将其值设置为 -all_load 或者 -force_load 即可，见下图：<br><img src="http://ww2.sinaimg.cn/mw690/632302ecgw1dzm7dnuk5vj.jpg" alt="设置 -ObjC">  </p>
+<h3 id="all-load-与-force-load-说明"><a href="#all-load-与-force-load-说明" class="headerlink" title="-all_load 与 -force_load 说明"></a>-all_load 与 -force_load 说明</h3><ul>
+<li>-all_load ：linker 会将所有可见的文件都载入到静态库中</li>
+<li>-force_load ：从 Xcode3.2之后才有的选项，能使得文件的载入更细化，每一个你要载入的文件，都要增加一个 -force_load 选项，并且在 -force_load 后面跟上要导入的文件路径，例如：-force_load ../three20/Build/Products/Release-iphoneos/libThree20.a</li>
+</ul>
+<h3 id="缺点-2"><a href="#缺点-2" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>使用 -all_load 会导致很多多余文件的导入，会导致静态库体积变大;  </li>
+<li>使用 -force_load 会很麻烦，要一个个手动添加。</li>
+</ul>
+<h2 id="方案四"><a href="#方案四" class="headerlink" title="方案四"></a>方案四</h2><p>facebook 的 <a href="https://github.com/facebook/three20" target="_blank" rel="external">three20</a> 框架也遇到了这个问题，他们给出了一个更好的解决方案：<br><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Add this macro before each category implementation, so we don't have to use</span><br><span class="line"> * -all_load or -force_load to load object files from static libraries that only contain</span><br><span class="line"> * categories and no classes.</span><br><span class="line"> * See http://developer.apple.com/library/mac/#qa/qa2006/qa1490.html for more info.</span><br><span class="line"> */</span></span><br><span class="line"> <span class="meta">#define TT_FIX_CATEGORY_BUG(name) @interface TT_FIX_CATEGORY_BUG_##name @end \</span></span><br><span class="line">	                               <span class="class"><span class="keyword">@implementation</span> <span class="title">TT_FIX_CATEGORY_BUG_</span>##<span class="title">name</span> @<span class="title">end</span></span></span><br></pre></td></tr></table></figure><br>上面的宏定义在 <a href="https://github.com/facebook/three20/blob/master/src/Three20Core/Headers/TTCorePreprocessorMacros.h" target="_blank" rel="external">TTCorePreprocessorMacros.h</a> 文件中，在每个 category 的实现文件开头加上：TT_FIX_CATEGORY_BUG({cateory名字}) ，这样就能避免在 iOS 中使用 -ObjC 的 linker 的 bug，但是记住，还是需要把使用静态库的 Target 中的 Building Setting 的 Other Linker Flags 设置成 -ObjC 。</p>
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS-Objective-C/" rel="tag">#iOS, Objective-C</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2012/07/25/xue-che-bei-nue-ji/" rel="next" title="学车被虐记">
+                <i class="fa fa-chevron-left"></i> 学车被虐记
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2012/11/01/yu-zhou/" rel="prev" title="《球状闪电》的宇宙观">
+                《球状闪电》的宇宙观 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="/blog/2012/08/13/zai-jing-tai-ku-zhong-shi-yong-category/"
+           data-title="使用一个包含category的静态库" data-url="http://zhenby.com//blog/2012/08/13/zai-jing-tai-ku-zhong-shi-yong-category/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="zhenby" />
+          <p class="site-author-name" itemprop="name">zhenby</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+          
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator">
+            <i class="fa fa-angle-double-up"></i>
+          </div>
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案一"><span class="nav-number">2.</span> <span class="nav-text">方案一</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">2.1.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案二"><span class="nav-number">3.</span> <span class="nav-text">方案二</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-1"><span class="nav-number">3.1.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#问题原因"><span class="nav-number">4.</span> <span class="nav-text">问题原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案三"><span class="nav-number">5.</span> <span class="nav-text">方案三</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置这个-ObjC-选项的具体步骤"><span class="nav-number">5.1.</span> <span class="nav-text">设置这个 -ObjC 选项的具体步骤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#all-load-与-force-load-说明"><span class="nav-number">5.2.</span> <span class="nav-text">-all_load 与 -force_load 说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点-2"><span class="nav-number">5.3.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案四"><span class="nav-number">6.</span> <span class="nav-text">方案四</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator">
+            <i class="fa fa-angle-double-down"></i>
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhenby</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+  </div>
+
+  
+
+
+  
+
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  
+<script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      var $indicator = $(indicator);
+      var opacity = action === 'show' ? 1 : 0;
+      $indicator.velocity ?
+        $indicator.velocity('stop').velocity({
+          opacity: opacity
+        }, { duration: 100 }) :
+        $indicator.stop().animate({
+          opacity: opacity
+        }, 100);
+    }
+
+  });
+</script>
+
+<script type="text/javascript" id="sidebar.nav">
+  $(document).ready(function () {
+    var html = $('html');
+    var TAB_ANIMATE_DURATION = 200;
+    var hasVelocity = $.isFunction(html.velocity);
+
+    $('.sidebar-nav li').on('click', function () {
+      var item = $(this);
+      var activeTabClassName = 'sidebar-nav-active';
+      var activePanelClassName = 'sidebar-panel-active';
+      if (item.hasClass(activeTabClassName)) {
+        return;
+      }
+
+      var currentTarget = $('.' + activePanelClassName);
+      var target = $('.' + item.data('target'));
+
+      hasVelocity ?
+        currentTarget.velocity('transition.slideUpOut', TAB_ANIMATE_DURATION, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', TAB_ANIMATE_DURATION)
+            .addClass(activePanelClassName);
+        }) :
+        currentTarget.animate({ opacity: 0 }, TAB_ANIMATE_DURATION, function () {
+          currentTarget.hide();
+          target
+            .stop()
+            .css({'opacity': 0, 'display': 'block'})
+            .animate({ opacity: 1 }, TAB_ANIMATE_DURATION, function () {
+              currentTarget.removeClass(activePanelClassName);
+              target.addClass(activePanelClassName);
+            });
+        });
+
+      item.siblings().removeClass(activeTabClassName);
+      item.addClass(activeTabClassName);
+    });
+
+    $('.post-toc a').on('click', function (e) {
+      e.preventDefault();
+      var targetSelector = NexT.utils.escapeSelector(this.getAttribute('href'));
+      var offset = $(targetSelector).offset().top;
+      hasVelocity ?
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        }) :
+        $('html, body').stop().animate({
+          scrollTop: offset
+        }, 500);
+    });
+
+    // Expand sidebar on post detail page by default, when post has a toc.
+    NexT.motion.middleWares.sidebar = function () {
+      var $tocContent = $('.post-toc-content');
+
+      if (CONFIG.sidebar.display === 'post' || CONFIG.sidebar.display === 'always') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          NexT.utils.displaySidebar();
+        }
+      }
+    };
+  });
+</script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"zhenby"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+
+  
+  
+
+
+</body>
+</html>
