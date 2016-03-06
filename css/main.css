@@ -460,6 +460,11 @@ body {
     width: 900px;
   }
 }
+@media (max-width: 767px) {
+  .main-inner {
+    width: auto;
+  }
+}
 .footer {
   position: absolute;
   left: 0;
@@ -1528,7 +1533,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff457d;
+  background: #e894ff;
 }
 .sidebar-nav {
   margin: 0 0 20px;
@@ -2018,6 +2023,7 @@ ul li {
   .header-inner {
     margin-bottom: 50px;
     padding: 10px;
+    width: auto;
   }
 }
 .site-meta {
@@ -2302,5 +2308,6 @@ ul li {
 @media (max-width: 767px) {
   .footer-inner {
     text-align: center;
+    width: auto;
   }
 }

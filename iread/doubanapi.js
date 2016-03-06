@@ -20,7 +20,7 @@ var dbapi = {
 				link.src = item["db:subject"]["link"][2]["@href"];//硬编码
 				// 为了拿大图，把封面图中的 spic 替换成 lpic
 				// 拿到的封面图地址例子：http://img3.douban.com/spic/s6974202.jpg
-				link.src.replace("spic", "lpic");
+				link.src = link.src.replace("spic", "lpic");
 				items.push(link);
 			});			
 		return items;
