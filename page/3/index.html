@@ -236,6 +236,152 @@
             
               
                 
+                <a class="post-title-link" href="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/" itemprop="url">
+                  iOS 开发中的分辨率问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2012-11-08T23:31:00+08:00" content="2012-11-08">
+              2012-11-08
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>今天逛知乎的时候看到这个<a href="http://www.zhihu.com/question/20583941" target="_blank" rel="external">问题</a></p>
+<blockquote>
+<p>ios开发过程中屏幕尺寸，分辨率及其比例等等之间的关系?一次性详尽，清晰介绍，以饷入门者</p>
+<blockquote>
+<p>根据屏幕尺寸和分辨率，ios现在数起来有6个版本。<br>一，3GS；二，4s为代表；三，iphone5；四，ipad2为代表；五，ipad4为代表；六，ipad mini。<br>只是分辨率不一样的情况，如一二或者四五相比，开发时提供两种分辨率就可以了，应用自动识别？<br>只是尺寸不一样的情况，如四六相比，开发时完全没有影响？<br>分辨率以及尺寸都不一样的情况，如二三相比，又如何?</p>
+</blockquote>
+</blockquote>
+<p>想想刚开始做 iOS 开发的时候也有类似的疑问，于是做了回答，希望这个对初学者有帮助：  </p>
+<ul>
+<li>iOS 设备现有的分辨率<ul>
+<li>iPhone/iPod Touch<ul>
+<li>普通屏<br>320像素 x 480像素       iPhone 1、3G、3GS，iPod Touch 1、2、3  </li>
+<li>3：2 Retina 屏<br>640像素 x 960像素       iPhone 4、4S，iPod Touch 4  </li>
+<li>16：9 Retina 屏<br>640像素 x 1136像素      iPhone 5，iPod Touch 5    </li>
+</ul>
+</li>
+<li>iPad <ul>
+<li>普通屏<br>768像素 x 1024像素     iPad 1， iPad2，iPad mini  </li>
+<li>Retina屏<br>1536像素 x 2048像素     New iPad，iPad 4    </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><br></p>
+<ul>
+<li>问一：只是分辨率不一样的情况，如一二或者四五相比，开发时提供两种分辨率就可以了，应用自动识别？<br>答：<br>在 iPhone 5 跟 iPod Touch 5 没出之前，对于开发者来说，一二就是分辨率不同的区别而已，因为他们都是3.5寸的屏幕。并且，你细心的话会注意到，一二他们的分辨率是成倍的关系。<br>这给 iOS 的设计和开发都提供了方便，界面设计只需要设计一套，然后进行等比例放大缩小即可。  </li>
+</ul>
+<p>为了方便开发人员开发，iOS 中统一使用点（Point）对界面元素的大小进行描述。<br>所以对于一跟二，只需把屏幕大小都当成  <code>320 x 480点</code> 进行开发即可，点跟像素的换算关系如下：<br>普屏     : 1点 = 1像素<br>Retina屏 : 1点 = 2像素<br>iPad 上的开发也是这样，只需根据 <code>768 x 1136点</code> 进行开发即可。  </p>
+<p>而在 iPhone 5 跟 iPod Touch 5 的机器上，对于开发者来说，它的界面大小就是 <code>320 x 568点</code>，你只需根据这个大小去调整你的界面（如果需要调整的话）。  </p>
+<p>比如：我有一个按钮，要放在屏幕中间的位置，那么在界面大小为 320 x 480点 的设备上，只需设置它的 center 为 (320/2, 480/2) 即可，在 3：2 Retina 屏上系统这个按钮也可以正确的显示在中间；<br>而在屏幕大小为 320 x 568点 的设备上，你就设置它的 center 为 (320/2, 568/2)。<br>直接通过 <code>[[UIScreen mainScreen] bounds]</code> 即可获取到当前屏幕的基础分辨率，所以不用 hard code。  </p>
+<ul>
+<li><p>问二：只是尺寸不一样的情况，如四六相比，开发时完全没有影响？<br>答：<br>开发时只需要关注分辨率即可，iPad 2 跟 iPad mini 屏幕尺寸不同，但是分辨率一致，所以完全没有影响，在 iPad 2 上可正常跑的 app，在 iPad mini 上也可正常跑。  </p>
+</li>
+<li><p>问三：分辨率以及尺寸都不一样的情况，如二三相比，又如何？<br>答：<br>在 问一 中已经回答了  </p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/blog/2012/11/02/mai-tian-shou-wang-zhe/" itemprop="url">
                   麦田守望者
                 </a>
@@ -1143,7 +1289,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">24</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

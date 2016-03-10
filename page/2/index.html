@@ -236,6 +236,140 @@
             
               
                 
+                <a class="post-title-link" href="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/" itemprop="url">
+                  UIWindow的一个兼容性问题
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-04-28T12:53:00+08:00" content="2013-04-28">
+              2013-04-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/04/28/uiwindowde-[?]-ge-jian-rong-xing-wen-ti/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  </p>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h3 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h3><p>如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在<strong>iOS 5.1或者以下的系统版本</strong>中，可能会出现在 UIWebView中触发键盘时，<strong>键盘处于不可见的状态</strong>。</p>
+<h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><ul>
+<li>项目中使用了另一个 UIWindow (在这里给这个额外的 UIWindow 取个代号：HighLevelWindow)</li>
+<li>设置此 HighLevelWindow 的 windowLevel 大于 UIWindowLevelNormal，确保在显示时能覆盖在应用默认的 UIWindow 上面 (UIWindowLevelNormal 级别为应用默认的 UIWindow 的 windowLevel 取值)</li>
+<li>HighLevelWindow 中的 rootViewController 里面包含了一个 UIWebView  </li>
+<li>在显示此 HighLevelWindow 时，已经调用<code>makeKeyAndVisible</code>方法将 HighLevelWindow 设置成应用的keyWindow，确保能正常的接收到触摸事件</li>
+</ul>
+<h3 id="重现步骤"><a href="#重现步骤" class="headerlink" title="重现步骤"></a>重现步骤</h3><ol>
+<li>使用 iOS 5.1或者以下版本的设备运行应用，在应用默认的 UIWindow 中触发过键盘，如触发过一个输入框(UITextField)，见下图：</li>
+</ol>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png" alt="在默认UIWindow中触发键盘"></p>
+<p>2.调出 HighLevelWindow，将 HighLevelWindow 中的 UIWebView 载入 google.com，点击 google 的搜索输入框，会发现网页虽然上推了，但是键盘处于不可见的状态，见下图：</p>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%889.56.31.png" alt="键盘处于不可见的状态"></p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>上 google 搜了很久，给出的解决方案都是说没把 HighLevelWindow 设置成应用的 KeyWindow，导致接收不到屏幕的触摸事件，但是从 google 网页上推可以看出，其实 HighLevelWindow 是可以接收到触摸事件的，而且我已经确定把 HightLevelWindow 设置成应用的 KeyWindow 了。  </p>
+<p>现在的症状就是键盘在默认的 UIWindow 中触发过后，在 HinhLevelWindow 中再次触发，键盘其实是被挡在了 HighLevelWindow 后面，处于不可见，不可点击的状态。(此症状可通过将 HighLevelWindow 的 frame.size 设置成只有屏幕一半大小来确定)  </p>
+<p>尝试了各种方法，都是不行的，而且从 iOS 6.0 开始，此 bug 是不存在的，那更可以确定是一个兼容性的问题了。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>我突然想起，就在之前项目还没改用 UIWebView 前，使用一般的 UITextField 输入框是可以正常的显示键盘的，于是，就有以下这种取巧的解决方案：<br><strong>在包含了 UIWebView 的 UIViewController 显示时(<code>viewDidAppear:</code> 方法调用时)，插入一个 UITextField，迅速的获取焦点，然后取消焦点，删除此 UITextFiled </strong>，关键代码如下：<br><figure class="highlight objc"><figcaption><span>- FixedBugWindowViewController.m</span></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line">	    </span><br><span class="line">	<span class="comment">// 在系统版本低于 iOS 6.0 时才做此操作</span></span><br><span class="line">	<span class="keyword">if</span> ([[[<span class="built_in">UIDevice</span> currentDevice] systemVersion] floatValue] &lt; <span class="number">6.0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 新建一个 UITextField，并添加到视图中</span></span><br><span class="line">		<span class="built_in">UITextField</span> *textFieldFixKeyBoardBug = [[<span class="built_in">UITextField</span> alloc] initWithFrame:<span class="keyword">self</span>.view.bounds];</span><br><span class="line">		[<span class="keyword">self</span>.view addSubview:textFieldFixKeyBoardBug];</span><br><span class="line">								        </span><br><span class="line">		<span class="comment">// 获取焦点，释放焦点</span></span><br><span class="line">		[textFieldFixKeyBoardBug becomeFirstResponder];</span><br><span class="line">		[textFieldFixKeyBoardBug resignFirstResponder];</span><br><span class="line">														        </span><br><span class="line">		<span class="comment">// 将 UITextField 从视图中移除，并释放</span></span><br><span class="line">		[textFieldFixKeyBoardBug removeFromSuperview];</span><br><span class="line">		[textFieldFixKeyBoardBug release];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>加上以上代码后，可以正常的显示键盘了。</p>
+<p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png" alt="可正常显示键盘"></p>
+<h2 id="不单单是UIWebView，不单单是键盘"><a href="#不单单是UIWebView，不单单是键盘" class="headerlink" title="不单单是UIWebView，不单单是键盘"></a>不单单是UIWebView，不单单是键盘</h2><ul>
+<li>不单单是 UIWebView，我在使用 MFMessageComposeViewController 时也遇过这个问题，类似的 MFMailComposeViewController 应该也会出现这个问题，可以使用相同的方法修复</li>
+<li>不单单是键盘，在 UIWebView 中，页面有一个下拉框，会显示一个 UIPickerView，此 UIPickerView 也处于被隐藏，不可见的状态，也可以使用此方法修复</li>
+</ul>
+<h2 id="Demo源码"><a href="#Demo源码" class="headerlink" title="Demo源码"></a>Demo源码</h2><p>Demo源码地址：<a href="https://github.com/zhenby/UIWindowKeyboardBug" target="_blank" rel="external">https://github.com/zhenby/UIWindowKeyboardBug</a></p>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/blog/2013/03/05/han-shu-yu-fang-fa/" itemprop="url">
                   函数vs方法
                 </a>
@@ -1084,152 +1218,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/" itemprop="url">
-                  iOS 开发中的分辨率问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2012-11-08T23:31:00+08:00" content="2012-11-08">
-              2012-11-08
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/编程技术/" itemprop="url" rel="index">
-                    <span itemprop="name">编程技术</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/11/08/ios-kai-fa-zhong-de-fen-bian-lu-wen-ti/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天逛知乎的时候看到这个<a href="http://www.zhihu.com/question/20583941" target="_blank" rel="external">问题</a></p>
-<blockquote>
-<p>ios开发过程中屏幕尺寸，分辨率及其比例等等之间的关系?一次性详尽，清晰介绍，以饷入门者</p>
-<blockquote>
-<p>根据屏幕尺寸和分辨率，ios现在数起来有6个版本。<br>一，3GS；二，4s为代表；三，iphone5；四，ipad2为代表；五，ipad4为代表；六，ipad mini。<br>只是分辨率不一样的情况，如一二或者四五相比，开发时提供两种分辨率就可以了，应用自动识别？<br>只是尺寸不一样的情况，如四六相比，开发时完全没有影响？<br>分辨率以及尺寸都不一样的情况，如二三相比，又如何?</p>
-</blockquote>
-</blockquote>
-<p>想想刚开始做 iOS 开发的时候也有类似的疑问，于是做了回答，希望这个对初学者有帮助：  </p>
-<ul>
-<li>iOS 设备现有的分辨率<ul>
-<li>iPhone/iPod Touch<ul>
-<li>普通屏<br>320像素 x 480像素       iPhone 1、3G、3GS，iPod Touch 1、2、3  </li>
-<li>3：2 Retina 屏<br>640像素 x 960像素       iPhone 4、4S，iPod Touch 4  </li>
-<li>16：9 Retina 屏<br>640像素 x 1136像素      iPhone 5，iPod Touch 5    </li>
-</ul>
-</li>
-<li>iPad <ul>
-<li>普通屏<br>768像素 x 1024像素     iPad 1， iPad2，iPad mini  </li>
-<li>Retina屏<br>1536像素 x 2048像素     New iPad，iPad 4    </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><br></p>
-<ul>
-<li>问一：只是分辨率不一样的情况，如一二或者四五相比，开发时提供两种分辨率就可以了，应用自动识别？<br>答：<br>在 iPhone 5 跟 iPod Touch 5 没出之前，对于开发者来说，一二就是分辨率不同的区别而已，因为他们都是3.5寸的屏幕。并且，你细心的话会注意到，一二他们的分辨率是成倍的关系。<br>这给 iOS 的设计和开发都提供了方便，界面设计只需要设计一套，然后进行等比例放大缩小即可。  </li>
-</ul>
-<p>为了方便开发人员开发，iOS 中统一使用点（Point）对界面元素的大小进行描述。<br>所以对于一跟二，只需把屏幕大小都当成  <code>320 x 480点</code> 进行开发即可，点跟像素的换算关系如下：<br>普屏     : 1点 = 1像素<br>Retina屏 : 1点 = 2像素<br>iPad 上的开发也是这样，只需根据 <code>768 x 1136点</code> 进行开发即可。  </p>
-<p>而在 iPhone 5 跟 iPod Touch 5 的机器上，对于开发者来说，它的界面大小就是 <code>320 x 568点</code>，你只需根据这个大小去调整你的界面（如果需要调整的话）。  </p>
-<p>比如：我有一个按钮，要放在屏幕中间的位置，那么在界面大小为 320 x 480点 的设备上，只需设置它的 center 为 (320/2, 480/2) 即可，在 3：2 Retina 屏上系统这个按钮也可以正确的显示在中间；<br>而在屏幕大小为 320 x 568点 的设备上，你就设置它的 center 为 (320/2, 568/2)。<br>直接通过 <code>[[UIScreen mainScreen] bounds]</code> 即可获取到当前屏幕的基础分辨率，所以不用 hard code。  </p>
-<ul>
-<li><p>问二：只是尺寸不一样的情况，如四六相比，开发时完全没有影响？<br>答：<br>开发时只需要关注分辨率即可，iPad 2 跟 iPad mini 屏幕尺寸不同，但是分辨率一致，所以完全没有影响，在 iPad 2 上可正常跑的 app，在 iPad mini 上也可正常跑。  </p>
-</li>
-<li><p>问三：分辨率以及尺寸都不一样的情况，如二三相比，又如何？<br>答：<br>在 问一 中已经回答了  </p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -1276,7 +1264,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">23</span>
+              <span class="site-state-item-count">24</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
