@@ -208,6 +208,297 @@
 
     
     
+      
+      
+
+      
+    
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/blog/2013/05/16/cordova-for-ios/" itemprop="url">
+                  浅析 Cordova for iOS
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-05-16T10:54:00+08:00" content="2013-05-16">
+              2013-05-16
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/编程技术/" itemprop="url" rel="index">
+                    <span itemprop="name">编程技术</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/05/16/cordova-for-ios/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/05/16/cordova-for-ios/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="http://cordova.apache.org/" target="_blank" rel="external">Cordova</a>，对这个名字大家可能比较陌生，大家肯定听过 PhoneGap 这个名字，Cordova 就是 PhoneGap 被 Adobe 收购后所改的名字。</p>
+<p>Cordova 是一个可以让 JS 与原生代码(包括 Android 的 java，iOS 的 Objective-C 等)互相通信的一个库，并且提供了一系列的插件类，比如 JS 直接操作本地数据库的插件类。</p>
+<p>这些插件类都是基于 JS 与 Objective-C 可以互相通信的基础的，这篇文章说说 Cordova 是如何做到 JS 与 Objective-C 互相通信的，解释如何互相通信需要弄清楚下面三个问题：  </p>
+<ol>
+<li>JS 怎么跟 Objective-C 通信  </li>
+<li>Objective-C 怎么跟 JS 通信  </li>
+<li>JS 请求 Objective-C，Objective-C 返回结果给 JS，这一来一往是怎么串起来的  </li>
+</ol>
+<p>Cordova 现在最新版本是 2.7.0，本文也是基于 2.7.0 版本进行分析的。 </p>
+<h2 id="JS-怎么跟-Objective-C-通信"><a href="#JS-怎么跟-Objective-C-通信" class="headerlink" title="JS 怎么跟 Objective-C 通信"></a>JS 怎么跟 Objective-C 通信</h2><p>JS 与 Objetive-C 通信的关键代码如下：(点击代码框右上角的文件名链接，可直接跳转该文件在 github 的地址)<br><figure class="highlight js"><figcaption><span>JS 发起请求</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/cordova.js" target="_blank" rel="external">cordova.js</a></figcaption><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iOSExec</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	...</span><br><span class="line"> 	if (!isInContextOfEvalJs &amp;&amp; commandQueue.length == <span class="number">1</span>) 	&#123;</span><br><span class="line"> 		<span class="comment">// 如果支持 XMLHttpRequest，则使用 XMLHttpRequest 方式</span></span><br><span class="line">    	<span class="keyword">if</span> (bridgeMode != jsToNativeModes.IFRAME_NAV) &#123;</span><br><span class="line">            <span class="comment">// This prevents sending an XHR when there is already one being sent.</span></span><br><span class="line">            <span class="comment">// This should happen only in rare circumstances (refer to unit tests).</span></span><br><span class="line">            <span class="keyword">if</span> (execXhr &amp;&amp; execXhr.readyState != <span class="number">4</span>) &#123;</span><br><span class="line">                execXhr = <span class="literal">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Re-using the XHR improves exec() performance by about 10%.</span></span><br><span class="line">            execXhr = execXhr || <span class="keyword">new</span> XMLHttpRequest();</span><br><span class="line">            <span class="comment">// Changing this to a GET will make the XHR reach the URIProtocol on 4.2.</span></span><br><span class="line">            <span class="comment">// For some reason it still doesn't work though...</span></span><br><span class="line">            <span class="comment">// Add a timestamp to the query param to prevent caching.</span></span><br><span class="line">            execXhr.open(<span class="string">'HEAD'</span>, <span class="string">"/!gap_exec?"</span> + (+<span class="keyword">new</span> <span class="built_in">Date</span>()), <span class="literal">true</span>);</span><br><span class="line">            <span class="keyword">if</span> (!vcHeaderValue) &#123;</span><br><span class="line">                vcHeaderValue = <span class="regexp">/.*\((.*)\)/</span>.exec(navigator.userAgent)[<span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line">            execXhr.setRequestHeader(<span class="string">'vc'</span>, vcHeaderValue);</span><br><span class="line">            execXhr.setRequestHeader(<span class="string">'rc'</span>, ++requestCount);</span><br><span class="line">            <span class="keyword">if</span> (shouldBundleCommandJson()) &#123;</span><br><span class="line">            	<span class="comment">// 设置请求的数据</span></span><br><span class="line">                execXhr.setRequestHeader(<span class="string">'cmds'</span>, iOSExec.nativeFetchMessages());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 发起请求</span></span><br><span class="line">            execXhr.send(<span class="literal">null</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        	<span class="comment">// 如果不支持 XMLHttpRequest，则使用透明 iframe 的方式，设置 iframe 的 src 属性</span></span><br><span class="line">            execIframe = execIframe || createExecIframe();</span><br><span class="line">            execIframe.src = <span class="string">"gap://ready"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>JS 使用了<strong>两种方式</strong>来与 Objective-C 通信，一种是使用 XMLHttpRequest 发起请求的方式，另一种则是通过设置透明的 iframe 的 src 属性，下面详细介绍一下两种方式是怎么工作的：</p>
+<h3 id="XMLHttpRequest-bridge"><a href="#XMLHttpRequest-bridge" class="headerlink" title="XMLHttpRequest bridge"></a>XMLHttpRequest bridge</h3><p>JS 端使用 XMLHttpRequest 发起了一个请求：<code>execXhr.open(&#39;HEAD&#39;, &quot;/!gap_exec?&quot; + (+new Date()), true);</code> ，请求的地址是 <code>/!gap_exec</code>；并把请求的数据放在了请求的 header 里面，见这句代码：<code>execXhr.setRequestHeader(&#39;cmds&#39;, iOSExec.nativeFetchMessages());</code> 。  </p>
+<p>而在 Objective-C 端使用一个 NSURLProtocol 的子类来检查每个请求，如果地址是 <code>/!gap_exec</code> 的话，则认为是 Cordova 通信的请求，直接拦截，拦截后就可以通过分析请求的数据，分发到不同的插件类(<a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/cordova.js" target="_blank" rel="external">CDVPlugin</a> 类的子类)的方法中：<br><figure class="highlight objc"><figcaption><span>UCCDVURLProtocol 拦截请求</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVURLProtocol.m" target="_blank" rel="external">UCCDVURLProtocol.m</a></figcaption><table><tr><td class="code"><pre><span class="line">+ (<span class="built_in">BOOL</span>)canInitWithRequest:(<span class="built_in">NSURLRequest</span>*)theRequest</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSURL</span>* theUrl = [theRequest URL];</span><br><span class="line">    <span class="built_in">NSString</span>* theScheme = [theUrl scheme];</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 判断请求是否为 /!gap_exec</span></span><br><span class="line">    <span class="keyword">if</span> ([[theUrl path] isEqualToString:<span class="string">@"/!gap_exec"</span>]) &#123;</span><br><span class="line">        <span class="built_in">NSString</span>* viewControllerAddressStr = [theRequest valueForHTTPHeaderField:<span class="string">@"vc"</span>];</span><br><span class="line">        <span class="keyword">if</span> (viewControllerAddressStr == <span class="literal">nil</span>) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"!cordova request missing vc header"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">long</span> <span class="keyword">long</span> viewControllerAddress = [viewControllerAddressStr longLongValue];</span><br><span class="line">        <span class="comment">// Ensure that the UCCDVViewController has not been dealloc'ed.</span></span><br><span class="line">        UCCDVViewController* viewController = <span class="literal">nil</span>;</span><br><span class="line">        <span class="keyword">@synchronized</span>(gRegisteredControllers) &#123;</span><br><span class="line">            <span class="keyword">if</span> (![gRegisteredControllers containsObject:</span><br><span class="line">					[<span class="built_in">NSNumber</span> numberWithLongLong:viewControllerAddress]]) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            viewController = (UCCDVViewController*)(<span class="keyword">void</span>*)viewControllerAddress;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 获取请求的数据</span></span><br><span class="line">        <span class="built_in">NSString</span>* queuedCommandsJSON = [theRequest valueForHTTPHeaderField:<span class="string">@"cmds"</span>];</span><br><span class="line">        <span class="built_in">NSString</span>* requestId = [theRequest valueForHTTPHeaderField:<span class="string">@"rc"</span>];</span><br><span class="line">        <span class="keyword">if</span> (requestId == <span class="literal">nil</span>) &#123;</span><br><span class="line">            <span class="built_in">NSLog</span>(<span class="string">@"!cordova request missing rc header"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">        &#125;</span><br><span class="line">       	...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Cordova 中优先使用这种方式，<a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/cordova.js" target="_blank" rel="external">Cordova.js</a> 中的注释有提及为什么优先使用 XMLHttpRequest 的方式，及为什么保留第二种 iframe bridge 的通信方式:  </p>
+<blockquote>
+<p>// XHR mode does not work on iOS 4.2, so default to IFRAME_NAV for such devices.<br>// XHR mode’s main advantage is working around a bug in -webkit-scroll, which<br>// doesn’t exist in 4.X devices anyways</p>
+</blockquote>
+<h3 id="iframe-bridge"><a href="#iframe-bridge" class="headerlink" title="iframe bridge"></a>iframe bridge</h3><p>在 JS 端创建一个<strong>透明的 iframe</strong>，设置这个 ifame 的 src 为自定义的协议，而 ifame 的 src 更改时，UIWebView 会先回调其 delegate 的 <code>webView:shouldStartLoadWithRequest:navigationType:</code> 方法，关键代码如下：<br><figure class="highlight objc"><figcaption><span>UIWebView拦截加载</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVViewController.m" target="_blank" rel="external">CDVViewController.m</a></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">// UIWebView 加载 URL 前回调的方法，返回 YES，则开始加载此 URL，返回 NO，则忽略此 URL</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)webView:(<span class="built_in">UIWebView</span>*)theWebView </span><br><span class="line">			shouldStartLoadWithRequest:(<span class="built_in">NSURLRequest</span>*)request </span><br><span class="line">			navigationType:(<span class="built_in">UIWebViewNavigationType</span>)navigationType</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">NSURL</span>* url = [request URL];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/*</span><br><span class="line">     * Execute any commands queued with cordova.exec() on the JS side.</span><br><span class="line">     * The part of the URL after gap:// is irrelevant.</span><br><span class="line">     */</span></span><br><span class="line">    <span class="comment">// 判断是否 Cordova 的请求，对于 JS 代码中 execIframe.src = "gap://ready" 这句</span></span><br><span class="line">    <span class="keyword">if</span> ([[url scheme] isEqualToString:<span class="string">@"gap"</span>]) &#123;</span><br><span class="line">        <span class="comment">// 获取请求的数据，并对数据进行分析、处理</span></span><br><span class="line">        [_commandQueue fetchCommandsFromJs];</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Objective-C-怎么跟-JS-通信"><a href="#Objective-C-怎么跟-JS-通信" class="headerlink" title="Objective-C 怎么跟 JS 通信"></a>Objective-C 怎么跟 JS 通信</h2><p>熟悉 UIWebView 用法的同学都知道 UIWebView 有一个这样的方法 <code>stringByEvaluatingJavaScriptFromString:</code>，这个方法可以让一个 UIWebView 对象执行一段 JS 代码，这样就可以达到 Objective-C 跟 JS 通信的效果，在 Cordova 的代码中多处用到了这个方法，其中最重要的两处如下：   </p>
+<ul>
+<li><p>获取 JS 的请求数据</p>
+<figure class="highlight objc"><figcaption><span>获取 JS 的请求数据</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVCommandQueue.m" target="_blank" rel="external">CDVCommandQueue.m</a></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)fetchCommandsFromJs</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Grab all the queued commands from the JS side.</span></span><br><span class="line">    <span class="built_in">NSString</span>* queuedCommandsJSON = [_viewController.webView </span><br><span class="line">										stringByEvaluatingJavaScriptFromString: </span><br><span class="line">											<span class="string">@"cordova.require('cordova/exec').nativeFetchMessages()"</span>];</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">self</span> enqueCommandBatch:queuedCommandsJSON];</span><br><span class="line">    <span class="keyword">if</span> ([queuedCommandsJSON length] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        CDV_EXEC_LOG(<span class="string">@"Exec: Retrieved new exec messages by request."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>把 JS 请求的结果返回给 JS 端</p>
+<figure class="highlight objc"><figcaption><span>把 JS 请求的结果返回给 JS 端</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVCommandDelegateImpl.m" target="_blank" rel="external">CDVCommandDelegateImpl.m</a></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)evalJs:(<span class="built_in">NSString</span>*)js scheduledOnRunLoop:(<span class="built_in">BOOL</span>)scheduledOnRunLoop</span><br><span class="line">&#123;</span><br><span class="line">    js = [<span class="built_in">NSString</span> stringWithFormat:</span><br><span class="line">					<span class="string">@"cordova.require('cordova/exec').nativeEvalAndFetch(function()&#123; %@ &#125;)"</span>, </span><br><span class="line">					js];</span><br><span class="line">    <span class="keyword">if</span> (scheduledOnRunLoop) &#123;</span><br><span class="line">        [<span class="keyword">self</span> evalJsHelper:js];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [<span class="keyword">self</span> evalJsHelper2:js];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)evalJsHelper2:(<span class="built_in">NSString</span>*)js</span><br><span class="line">&#123;</span><br><span class="line">    CDV_EXEC_LOG(<span class="string">@"Exec: evalling: %@"</span>, [js substringToIndex:MIN([js length], <span class="number">160</span>)]);</span><br><span class="line">    <span class="built_in">NSString</span>* commandsJSON = [_viewController.webView </span><br><span class="line">								stringByEvaluatingJavaScriptFromString:js];</span><br><span class="line">    <span class="keyword">if</span> ([commandsJSON length] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        CDV_EXEC_LOG(<span class="string">@"Exec: Retrieved new exec messages by chaining."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    [_commandQueue enqueCommandBatch:commandsJSON];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)evalJsHelper:(<span class="built_in">NSString</span>*)js</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// Cycle the run-loop before executing the JS.</span></span><br><span class="line">    <span class="comment">// This works around a bug where sometimes alerts() within callbacks can cause</span></span><br><span class="line">    <span class="comment">// dead-lock.</span></span><br><span class="line">    <span class="comment">// If the commandQueue is currently executing, then we know that it is safe to</span></span><br><span class="line">    <span class="comment">// execute the callback immediately.</span></span><br><span class="line">    <span class="comment">// Using    (dispatch_get_main_queue()) does *not* fix deadlocks for some reaon,</span></span><br><span class="line">    <span class="comment">// but performSelectorOnMainThread: does.</span></span><br><span class="line">    <span class="keyword">if</span> (![<span class="built_in">NSThread</span> isMainThread] || !_commandQueue.currentlyExecuting) &#123;</span><br><span class="line">        [<span class="keyword">self</span> performSelectorOnMainThread:<span class="keyword">@selector</span>(evalJsHelper2:) </span><br><span class="line">			    			    withObject:js </span><br><span class="line">			    			 waitUntilDone:<span class="literal">NO</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        [<span class="keyword">self</span> evalJsHelper2:js];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="怎么串起来"><a href="#怎么串起来" class="headerlink" title="怎么串起来"></a>怎么串起来</h2><p>先看一下 Cordova JS 端请求方法的格式：<br><figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// successCallback : 成功回调方法</span></span><br><span class="line"><span class="comment">// failCallback    : 失败回调方法</span></span><br><span class="line"><span class="comment">// server          : 所要请求的服务名字</span></span><br><span class="line"><span class="comment">// action          : 所要请求的服务具体操作</span></span><br><span class="line"><span class="comment">// actionArgs      : 请求操作所带的参数</span></span><br><span class="line">cordova.exec(successCallback, failCallback, service, action, actionArgs);</span><br></pre></td></tr></table></figure></p>
+<p>传进来的这五个参数并不是直接传送给原生代码的，Cordova JS 端会做以下的处理：  </p>
+<ol>
+<li>会为每个请求生成一个叫 <strong>callbackId</strong> 的唯一标识：这个参数需传给 Objective-C 端，Objective-C 处理完后，会把 callbackId 连同处理结果一起返回给 JS 端  </li>
+<li>以 callbackId 为 key，{success:successCallback, fail:failCallback} 为 value，<strong>把这个键值对保存在 JS 端的字典里</strong>，successCallback 与 failCallback 这两个参数不需要传给 Objective-C 端，Objective-C 返回结果时带上 callbackId，<strong>JS 端就可以根据 callbackId 找到回调方法</strong>  </li>
+<li>每次 JS 请求，最后发到 Objective-C 的数据包括：callbackId, service, action, actionArgs  </li>
+</ol>
+<p>关键代码如下：<br><figure class="highlight js"><figcaption><span>JS 端处理请求</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/cordova.js" target="_blank" rel="external">cordova.js</a></figcaption><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">iOSExec</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">	<span class="comment">// 生成一个 callbackId 的唯一标识，并把此标志与成功、失败回调方法一起保存在 JS 端</span></span><br><span class="line">    <span class="comment">// Register the callbacks and add the callbackId to the positional</span></span><br><span class="line">    <span class="comment">// arguments if given.</span></span><br><span class="line">    <span class="keyword">if</span> (successCallback || failCallback) &#123;</span><br><span class="line">        callbackId = service + cordova.callbackId++;</span><br><span class="line">        cordova.callbacks[callbackId] =</span><br><span class="line">            &#123;success:successCallback, fail:failCallback&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    actionArgs = massageArgsJsToNative(actionArgs);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 把 callbackId，service，action，actionArgs 保持到 commandQueue 中</span></span><br><span class="line">	<span class="comment">// 这四个参数就是最后发给原生代码的数据</span></span><br><span class="line">    <span class="keyword">var</span> command = [callbackId, service, action, actionArgs];</span><br><span class="line">    commandQueue.push(<span class="built_in">JSON</span>.stringify(command));</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取请求的数据，包括 callbackId, service, action, actionArgs</span></span><br><span class="line">iOSExec.nativeFetchMessages = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// Each entry in commandQueue is a JSON string already.</span></span><br><span class="line">    <span class="keyword">if</span> (!commandQueue.length) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> json = <span class="string">'['</span> + commandQueue.join(<span class="string">','</span>) + <span class="string">']'</span>;</span><br><span class="line">    commandQueue.length = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> json;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>原生代码拿到 callbackId、service、action 及 actionArgs 后，会做以下的处理：  </p>
+<ol>
+<li>根据 service 参数找到对应的插件类  </li>
+<li>根据 action 参数找到插件类中对应的处理方法，并把 actionArgs 作为处理方法请求参数的一部分传给处理方法  </li>
+<li>处理完成后，把处理结果及 callbackId 返回给 JS 端，JS 端收到后会根据 callbackId 找到回调方法，并把处理结果传给回调方法  </li>
+</ol>
+<p>关键代码：<br><figure class="highlight objc"><figcaption><span>Objective-C 返回结果给 JS 端</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/Classes/CDVCommandDelegateImpl.m" target="_blank" rel="external">CDVCommandDelegateImpl.m</a></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)sendPluginResult:(CDVPluginResult*)result callbackId:(<span class="built_in">NSString</span>*)callbackId</span><br><span class="line">&#123;</span><br><span class="line">    CDV_EXEC_LOG(<span class="string">@"Exec(%@): Sending result. Status=%@"</span>, callbackId, result.status);</span><br><span class="line">    <span class="comment">// This occurs when there is are no win/fail callbacks for the call.</span></span><br><span class="line">    <span class="keyword">if</span> ([<span class="string">@"INVALID"</span> isEqualToString : callbackId]) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> status = [result.status intValue];</span><br><span class="line">    <span class="built_in">BOOL</span> keepCallback = [result.keepCallback boolValue];</span><br><span class="line">    <span class="built_in">NSString</span>* argumentsAsJSON = [result argumentsAsJSON];</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 将请求的处理结果及 callbackId 通过调用 JS 方法返回给 JS 端</span></span><br><span class="line">    <span class="built_in">NSString</span>* js = [<span class="built_in">NSString</span> stringWithFormat:</span><br><span class="line">								<span class="string">@"cordova.require('cordova/exec').nativeCallback('%@',%d,%@,%d)"</span>, </span><br><span class="line">								callbackId, status, argumentsAsJSON, keepCallback];</span><br><span class="line"></span><br><span class="line">    [<span class="keyword">self</span> evalJsHelper:js];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight js"><figcaption><span>JS 端根据 callbackId 回调</span><a href="https://github.com/apache/cordova-ios/blob/master/CordovaLib/cordova.js" target="_blank" rel="external">cordova.js</a></figcaption><table><tr><td class="code"><pre><span class="line"><span class="comment">// 根据 callbackId 及是否成功标识，找到回调方法，并把处理结果传给回调方法</span></span><br><span class="line">callbackFromNative: <span class="function"><span class="keyword">function</span>(<span class="params">callbackId, success, status, args, keepCallback</span>) </span>&#123;</span><br><span class="line">       <span class="keyword">var</span> callback = cordova.callbacks[callbackId];</span><br><span class="line">       <span class="keyword">if</span> (callback) &#123;</span><br><span class="line">           <span class="keyword">if</span> (success &amp;&amp; status == cordova.callbackStatus.OK) &#123;</span><br><span class="line">               callback.success &amp;&amp; callback.success.apply(<span class="literal">null</span>, args);</span><br><span class="line">           &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!success) &#123;</span><br><span class="line">               callback.fail &amp;&amp; callback.fail.apply(<span class="literal">null</span>, args);</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           <span class="comment">// Clear callback if not expecting any more results</span></span><br><span class="line">           <span class="keyword">if</span> (!keepCallback) &#123;</span><br><span class="line">               <span class="keyword">delete</span> cordova.callbacks[callbackId];</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="通信效率"><a href="#通信效率" class="headerlink" title="通信效率"></a>通信效率</h2><p>Cordova 这套通信效率并不算低。我使用 <strong>iPod Touch 4</strong> 与 <strong>iPhone 5</strong> 进行真机测试：JS 做一次请求，Objective-C 收到请求后不做任何的处理，马上把请求的数据返回给 JS 端，这样能大概的测出一来一往的时间(从 JS 发出请求，到 JS 收到结果的时间)。每个真机我做了三组测试，每组连续测试十次，每组测试前我都会把机器重启，结果如下：</p>
+<ul>
+<li>iPod Touch 4(时间单位：毫秒)：  </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">组\序号</th>
+<th style="text-align:center">第1次</th>
+<th style="text-align:center">第2次</th>
+<th style="text-align:center">第3次</th>
+<th style="text-align:center">第4次</th>
+<th style="text-align:center">第5次</th>
+<th style="text-align:center">第6次</th>
+<th style="text-align:center">第7次</th>
+<th style="text-align:center">第8次</th>
+<th style="text-align:center">第9次</th>
+<th style="text-align:center">第10次</th>
+<th style="text-align:center">组平均时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">第一组</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">14</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">11.0 </td>
+</tr>
+<tr>
+<td style="text-align:center">第二组</td>
+<td style="text-align:center">33</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">14</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">15</td>
+<td style="text-align:center">37</td>
+<td style="text-align:center">15.2</td>
+</tr>
+<tr>
+<td style="text-align:center">第三组</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">19</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">16</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">17</td>
+<td style="text-align:center">13</td>
+<td style="text-align:center">9</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">13.2</td>
+</tr>
+</tbody>
+</table>
+<p>这三十次测试的平均时间是：(11.0 + 15.2 + 13.2) / 3 = 13.13 毫秒  </p>
+<ul>
+<li>iPhone 5(时间单位：毫秒)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">组\序号</th>
+<th style="text-align:center">第1次</th>
+<th style="text-align:center">第2次</th>
+<th style="text-align:center">第3次</th>
+<th style="text-align:center">第4次</th>
+<th style="text-align:center">第5次</th>
+<th style="text-align:center">第6次</th>
+<th style="text-align:center">第7次</th>
+<th style="text-align:center">第8次</th>
+<th style="text-align:center">第9次</th>
+<th style="text-align:center">第10次</th>
+<th style="text-align:center">组平均时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">第一组</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2.7 </td>
+</tr>
+<tr>
+<td style="text-align:center">第二组</td>
+<td style="text-align:center">7</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">2.8</td>
+</tr>
+<tr>
+<td style="text-align:center">第三组</td>
+<td style="text-align:center">6</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">3</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2.7</td>
+</tr>
+</tbody>
+</table>
+<p>这三十次测试的平均时间是：(2.7 + 2.8 + 2.7) / 3 = 2.73 毫秒  </p>
+<p><strong>这通信的效率虽然比不上原生调原生，但是也是属于可接受的范围了。</strong></p>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
 
     
       
@@ -1083,142 +1374,12 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/blog/2012/11/21/di-[?]-ci-10kmpao/" itemprop="url">
-                  第一次10km跑
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2012-11-21T14:38:00+08:00" content="2012-11-21">
-              2012-11-21
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/生活/" itemprop="url" rel="index">
-                    <span itemprop="name">生活</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/blog/2012/11/21/di-[?]-ci-10kmpao/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/11/21/di-[?]-ci-10kmpao/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>11月18号的时候参加了广州国际马拉松，第一次跑10km，顺利完成，成绩56’50。</p>
-<h2 id="报名"><a href="#报名" class="headerlink" title="报名"></a>报名</h2><p>报名比较曲折。<br>11月初的时候在微博上看到有这个赛事，看到了有10km 的项目，就想试试。登录进去报名网站里面想报名，发现名额全满了。<br>然后在11月13号的时候，@Nike广州 发了个微博，说前一百回复的可以报名参加广州马拉松5km 项目，马上就回复参加了。<br>在前一天 Nike 才发信息来通知报名成功，然后去领号码牌跟衣服。<br>本来以为是报5km 的，拿到的号码牌却是10km 的，原来是5km 跟10km 的路线是一样的，所以 Nike 鼓励大家都完成10km 的项目。<br>就这样曲折的还是报上了10km 的项目。  </p>
-<h2 id="预想"><a href="#预想" class="headerlink" title="预想"></a>预想</h2><p>我前半年，下班后去天河公园的跑步，跑两个小中圈，跑一次3.5km 左右。<br>下半年懒了，只是跑一个小圈-。- ，跑一次1km 左右而已，不过跑完后会去小区的健身设备上做仰卧起坐。<br>没跑过10km 这么长的距离，不过我经常运动，对我的体力还是有点信心的。<br>所以第一次跑10km，第一目标是跑完全程，第二目标是跑进1个小时内。  </p>
-<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><ul>
-<li>起点  ： 人超多，大家都堆在起点的位置，所以我开跑6分钟后，才开始跑出起点，可以开始小跑；  </li>
-<li>0-2km ：开始跑感觉还满轻松的，跟我平常的节奏一样。我习惯两呼两吸的呼吸节奏，然后每一次呼或者吸都会抬脚跑一步。在1-2km 间，超过了很多人；  </li>
-<li>3-4km ：运动量开始上来了，也开始出汗了。我是穿长的运动裤跑的，感觉大腿的毛孔都塞住了，很热，很痒，以后还是穿短裤跑比较好; </li>
-<li>4-5km ：体力明显下降了，呼吸变短了，步子也小了，不过节奏掌握的不错。这是一段比较困难的时间，总想着这么5km 跑的终点还没到；这段时间感觉有挫折感，也没有外部激励，只能靠自己慢慢熬过来。这段时间也被很多人超过了；  </li>
-<li>5km   ：5km 是 mini 跑的重点，终于跑完一半了，心里的挫折感也慢慢没了。喝了水之后，体力也慢慢恢复了；  </li>
-<li>5-6km ：跑的还不错，比较轻松；  </li>
-<li>7-8km ：补充的能量慢慢消耗完，有点吃力，不知道自己又跑了多远，好迷茫的样子；  </li>
-<li>9-10km：看到小蛮腰越来越近了，就知道终点不远了；第一个10km 跑即将完成，感觉越跑越有劲；  </li>
-<li>10km  ：最后临近终点前，还冲刺了一下，很满足的冲过终点，时间：1小时02分50秒。  </li>
-</ul>
-<h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><ul>
-<li>10km 没想象中那么困难，而且在最后越跑越有劲，出乎我的意料。  </li>
-<li>路上行人，选手间的鼓励作用很大，组委会安排了一些中老年的健身小团体(打太极，舞剑，舞扇子等)在赛跑跑步给我们加油，路上看的人时不时也会给我们喊加油，鼓励真的很重要，在听到鼓励后的50m 里，明显感觉更有动力。所以下次看到长跑人群，不要吝啬你的鼓励，给他们喊一句“加油“其实就够了。    </li>
-<li>跑手想知道自己跑了多远，这是给自己的正能量。但是组委会没在各路段上设置路程的牌子，这点比较遗憾，如果有在各路段设置路程的牌子的话，大家还会跑的更好的。  </li>
-<li>还要一个要吐槽的就是，在 5km 处，给我们喝的水是一整瓶的。我们要一边跑一边拧开瓶盖，然后再喝，而且你只会喝一点，不会把一整瓶喝光，剩下的大半瓶又不能带着它跑，所以都直接扔地上了，很浪费。直接用纸杯装一杯就差不多了；而且路上的喝水点设的很少，就只有5km 处，7-8km 处，10km 处三个而已。  </li>
-<li>跑完这次 10km，我的人生要做的事又增加了一项：在我有生之年完成一次全程的马拉松跑。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1259,7 +1420,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">24</span>
+              <span class="site-state-item-count">25</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -1276,7 +1437,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
