@@ -60,14 +60,14 @@
 <meta name="description" content="Facebook 前不久发布三个工具用于检测内存泄露，分别是 FBRetainCycleDetector、FBAllocationTracker 及 FBMemoryProfiler，并在他们的技术博客上发布了一篇相关的博客 Automatic memory leak detection on iOS。
 看了一下 FBRetainCycleDetector 的代码，通过 Runtime 捕获循环引">
 <meta property="og:type" content="article">
-<meta property="og:title" content="FBRetainCycleDetector解析——获取一般对象的强引用对象">
+<meta property="og:title" content="FBRetainCycleDetector解析——获取一般对象的Strong成员变量">
 <meta property="og:url" content="http://zhenby.com/blog/2016/04/29/FBRetainCycleDetector-Learning-1/index.html">
 <meta property="og:site_name" content="zhenby's blog">
 <meta property="og:description" content="Facebook 前不久发布三个工具用于检测内存泄露，分别是 FBRetainCycleDetector、FBAllocationTracker 及 FBMemoryProfiler，并在他们的技术博客上发布了一篇相关的博客 Automatic memory leak detection on iOS。
 看了一下 FBRetainCycleDetector 的代码，通过 Runtime 捕获循环引">
-<meta property="og:updated_time" content="2016-05-03T12:10:38.000Z">
+<meta property="og:updated_time" content="2016-05-04T02:26:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="FBRetainCycleDetector解析——获取一般对象的强引用对象">
+<meta name="twitter:title" content="FBRetainCycleDetector解析——获取一般对象的Strong成员变量">
 <meta name="twitter:description" content="Facebook 前不久发布三个工具用于检测内存泄露，分别是 FBRetainCycleDetector、FBAllocationTracker 及 FBMemoryProfiler，并在他们的技术博客上发布了一篇相关的博客 Automatic memory leak detection on iOS。
 看了一下 FBRetainCycleDetector 的代码，通过 Runtime 捕获循环引">
 
@@ -87,7 +87,7 @@
   };
 </script>
 
-  <title> FBRetainCycleDetector解析——获取一般对象的强引用对象 | zhenby's blog </title>
+  <title> FBRetainCycleDetector解析——获取一般对象的Strong成员变量 | zhenby's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -226,7 +226,7 @@
             
             
               
-                FBRetainCycleDetector解析——获取一般对象的强引用对象
+                FBRetainCycleDetector解析——获取一般对象的Strong成员变量
               
             
           </h1>
@@ -292,7 +292,7 @@
       
         <p>Facebook 前不久发布三个工具用于检测内存泄露，分别是 <a href="https://github.com/facebook/FBRetainCycleDetector" target="_blank" rel="external">FBRetainCycleDetector</a>、<a href="https://github.com/facebook/FBAllocationTracker" target="_blank" rel="external">FBAllocationTracker</a> 及 <a href="https://github.com/facebook/FBMemoryProfiler" target="_blank" rel="external">FBMemoryProfiler</a>，并在他们的技术博客上发布了一篇相关的博客 <a href="https://code.facebook.com/posts/583946315094347/automatic-memory-leak-detection-on-ios/" target="_blank" rel="external">Automatic memory leak detection on iOS</a>。</p>
 <p>看了一下 FBRetainCycleDetector 的代码，通过 Runtime 捕获循环引用，原理在 <a href="https://code.facebook.com/posts/583946315094347/automatic-memory-leak-detection-on-ios/" target="_blank" rel="external">Automatic memory leak detection on iOS</a> 这篇博客中有说到：把对象（包括 Block 对象）当成节点，以强引用为关系建立有向图，以深度优先遍历该有向图，寻找有向图中的环，一个环就代表一个循环引用。</p>
-<p>本篇博客介绍 FBRetainCycleDetector 库中获取一般对象的强应用对象的原理。</p>
+<p>本篇博客介绍 FBRetainCycleDetector 库中获取一般对象的 Strong 成员变量的原理。</p>
 <h2 id="Runtime-中的相关函数"><a href="#Runtime-中的相关函数" class="headerlink" title="Runtime 中的相关函数"></a>Runtime 中的相关函数</h2><p>先介绍一下 Runtime 中的几个函数：</p>
 <ul>
 <li><code>Class object_getClass(id obj)</code>：获取一个对象所属的类；</li>
@@ -369,7 +369,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="/blog/2016/04/29/FBRetainCycleDetector-Learning-1/"
-           data-title="FBRetainCycleDetector解析——获取一般对象的强引用对象" data-url="http://zhenby.com//blog/2016/04/29/FBRetainCycleDetector-Learning-1/">
+           data-title="FBRetainCycleDetector解析——获取一般对象的Strong成员变量" data-url="http://zhenby.com//blog/2016/04/29/FBRetainCycleDetector-Learning-1/">
       </div>
     
   </div>
