@@ -208,11 +208,6 @@
 
     
     
-      
-      
-
-      
-    
 
     
       
@@ -320,8 +315,8 @@
 <p>其中 <code>- supportedInterfaceOrientations</code> 方法在 iPad 中默认取值为 UIInterfaceOrientationMaskAll，即默认支持所有屏幕方向；而 iPhone 跟 iPod Touch 的默认取值为 UIInterfaceOrientationMaskAllButUpsideDown，即支持除竖屏向下以外的三个方向。<br>在设备屏幕旋转时，系统会调用 <code>- shouldAutorotate</code> 方法检查当前界面是否支持旋转，只有 <code>- shouldAutorotate</code> 返回 YES 的时候，<code>- supportedInterfaceOrientations</code> 方法才会被调用，以确定是否需要旋转界面。  </p>
 <h3 id="UIWindow中的界面控制-iOS-6及以上版本才有效"><a href="#UIWindow中的界面控制-iOS-6及以上版本才有效" class="headerlink" title="UIWindow中的界面控制(iOS 6及以上版本才有效)"></a>UIWindow中的界面控制(iOS 6及以上版本才有效)</h3><p>在 iOS 6 中，UIApplicationDelegate 协议中添加了一个可以指定 UIWindow 中的界面的屏幕方向的方法：<br><figure class="highlight objc"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">NSUInteger</span>)application:(<span class="built_in">UIApplication</span> *)application</span><br><span class="line">        supportedInterfaceOrientationsForWindow:(<span class="built_in">UIWindow</span> *)window</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">UIInterfaceOrientationMaskLandscape</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>此方法的默认值为 Info.plist 中配置的 Supported interface orientations 项的值。<br>一般我们都不会创建其他的 UIWindow，所以通过这个方法，也可以达到全局控制。  </p>
-<h3 id="全局控制"><a href="#全局控制" class="headerlink" title="全局控制"></a>全局控制</h3><p>在应用的 Info.plist 文件中，有一个 Supported interface orientations 的配置，可以配置整个应用的屏幕方向，如下图：<br><img src="http://pic.zhenby.com/PlistOrientation.png" alt="Supported interface orientations"></p>
-<p>此配置其实跟工程中 Target 的 Summary 界面中的 Supported interface orientations 配置是一致的，修改任意一边，另一个边都会同步的修改。<br><img src="http://pic.zhenby.com/TargetSummary.png" alt="Target Summary"></p>
+<h3 id="全局控制"><a href="#全局控制" class="headerlink" title="全局控制"></a>全局控制</h3><p>在应用的 Info.plist 文件中，有一个 Supported interface orientations 的配置，可以配置整个应用的屏幕方向，如下图：<br><img src="http://o8jwbg5zb.bkt.clouddn.com/PlistOrientation.png" alt="Supported interface orientations"></p>
+<p>此配置其实跟工程中 Target 的 Summary 界面中的 Supported interface orientations 配置是一致的，修改任意一边，另一个边都会同步的修改。<br><img src="http://o8jwbg5zb.bkt.clouddn.com/TargetSummary.png" alt="Target Summary"></p>
 <p>并且，应用在启动时，会使用 Info.plist 中的 Supported interface orientations 项中的第一个值作为启动动画的屏幕方向。按照此处截图的取值，第一个取值为 <code>Portrait(top home button)</code>，即竖屏反方向，所以此应用在启动时，会使用竖屏反方向显示启动动画。  </p>
 <h2 id="多种控制共存的规则"><a href="#多种控制共存的规则" class="headerlink" title="多种控制共存的规则"></a>多种控制共存的规则</h2><ul>
 <li>一个界面最后支持的屏幕方向，是取 <code>(全局控制 ∩ UIWindow 中的界面控制 ∩ 单个界面控制)</code> 的交集，如果全局控制支持所有屏幕方向，UIWindow 中的界面控制支持横屏，当个界面中只是支持横屏向右，那么最后界面只会以横屏向右显示，并且不支持旋转到其他的方向。  </li>

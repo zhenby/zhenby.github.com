@@ -67,10 +67,10 @@
 <meta property="og:description" content="之前为什么不兼容 iOS 7我在上一篇博客第一个收费应用-BLink中提到过，BLink 不兼容 iOS 7 是因为 iOS 7 的 bug，那时候因为 iOS 7 还在测试阶段，因为 NDA 的原因，我没细说那个 bug：  
 
 在 iOS 7 中，在 Web App 的全屏模式下（standlone），所有会离开当前浏览会话的 JS 执行都无效。比如，在全屏模式下，执行一个 JS 的 a">
-<meta property="og:image" content="http://pic.zhenby.com/BLink-iOS7.png">
-<meta property="og:image" content="http://pic.zhenby.com/Profile.png">
-<meta property="og:image" content="http://pic.zhenby.com/Confim.png">
-<meta property="og:updated_time" content="2016-02-25T09:43:14.000Z">
+<meta property="og:image" content="http://o8jwbg5zb.bkt.clouddn.com/BLink-iOS7.png">
+<meta property="og:image" content="http://o8jwbg5zb.bkt.clouddn.com/Profile.png">
+<meta property="og:image" content="http://o8jwbg5zb.bkt.clouddn.com/Confim.png">
+<meta property="og:updated_time" content="2016-06-10T12:34:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="BLink V1.5 兼容iOS 7了">
 <meta name="twitter:description" content="之前为什么不兼容 iOS 7我在上一篇博客第一个收费应用-BLink中提到过，BLink 不兼容 iOS 7 是因为 iOS 7 的 bug，那时候因为 iOS 7 还在测试阶段，因为 NDA 的原因，我没细说那个 bug：  
@@ -296,7 +296,7 @@
       
 
       
-        <p><img src="http://pic.zhenby.com/BLink-iOS7.png" alt="BLink in iOS 7">  </p>
+        <p><img src="http://o8jwbg5zb.bkt.clouddn.com/BLink-iOS7.png" alt="BLink in iOS 7">  </p>
 <h2 id="之前为什么不兼容-iOS-7"><a href="#之前为什么不兼容-iOS-7" class="headerlink" title="之前为什么不兼容 iOS 7"></a>之前为什么不兼容 iOS 7</h2><p>我在上一篇博客<a href="http://zhenby.com/blog/2013/09/12/blink/">第一个收费应用-BLink</a>中提到过，BLink 不兼容 iOS 7 是因为 iOS 7 的 bug，那时候因为 iOS 7 还在测试阶段，因为 NDA 的原因，我没细说那个 bug：  </p>
 <blockquote>
 <p>在 iOS 7 中，在 Web App 的全屏模式下（standlone），所有会离开当前浏览会话的 JS 执行都无效。比如，在全屏模式下，执行一个 JS 的 alert 语句无效，使用 JS 打开一个应用的 URL Scheme 也会无效。  </p>
@@ -305,9 +305,9 @@
 <h2 id="别对苹果修-bug-抱太大希望，要有-Plan-B"><a href="#别对苹果修-bug-抱太大希望，要有-Plan-B" class="headerlink" title="别对苹果修 bug 抱太大希望，要有 Plan B"></a>别对苹果修 bug 抱太大希望，要有 Plan B</h2><p>这个 bug 从 iOS 7 测试版本就一直存在，具体从 beta 几开始我没测试，我从 iOS 7 beta 4 开始试用 iOS 7，就发现了这个 bug，我一直认为现在是 iOS 7 的测试版本，有 bug 很正常，看到苹果开发者论坛上也有人已经报 bug 给苹果了，所以我是幻想着苹果能在 iOS 7 正式版本之前解决这个 bug 的。<br>但是到了 beta 6，再到9月10号苹果发布会后发布的 GM版，这个 bug 还是一直存在。<br>我这个时候还是幻想着苹果能在正式版的时候解决这个 bug，毕竟这是个大问题阿，所有全屏 Web App 都会受影响，连 alert 都 alert 不了。<br>所以在这段 iOS 7 测试版本期间，我没有做任何的行动，也没想好一直幻想着正式版本能正常工作。<br>但是在9月18号的时候，iOS 7 正式版发布，我测试后，问题依旧阿。我X，而且发现正式版根本就是 GM 版，一个星期一个问题都没解决阿，顿时对苹果失望至极。  </p>
 <p>因为之前对苹果修 bug 抱太大希望，我根本没考虑 Plan B，所以正式版发布后，一天几个一星差评，几封反馈的邮件。<br>这是教训阿，以后对这种大版本的更新，在最后的 GM 版本，如果还有问题，就应该尽快想 Plan B，并尽快上线新版本，并且，再加根据系统版本的远程开关，这样即使正式版本修复了，也可以远程控制是否启用 Plan B。  </p>
 <h2 id="怎么解决的"><a href="#怎么解决的" class="headerlink" title="怎么解决的"></a>怎么解决的</h2><p>解决的过程比较曲折，我尝试了使用 Local Storage 以及 Web SQL Database 来保存「是否将快捷方式添加到桌面」的标识，由于我的快捷方式的书签地址为 data:text/html 类型的，都无法使用 Local Storeage 及 Web SQL Database。<br>一开始一筹莫展，想不到好的办法解决，最后参考了一个同类型的 App，他们是使用安装「描述文件」的方式来生成桌面快捷方式。这种方式我一开始是抗拒的，因为用户不了解什么是描述文件，也不确定安装完后会不会对设备造成其他影响，而且由于我没买电子签名证书，所以我生成的描述文件在设备上安装时，会显示「未签名」的，这也会让用户疑惑。但是实在找不到其他的解决办法，最后只能在安装过程中提示用户「安装此描述文件只会在你的设备主屏幕上添加一个快捷方式，不会修改你设备上的任何设置，所以无需担心描述文件未签名的问题。」  </p>
-<p><img src="http://pic.zhenby.com/Profile.png" alt="Install the Profile">  </p>
+<p><img src="http://o8jwbg5zb.bkt.clouddn.com/Profile.png" alt="Install the Profile">  </p>
 <p>然后，解决了这个问题后，我又发现了一个 bug，在 iOS 7 中，从原生的应用中尝试打开电话的 URL Scheme 时，会卡个10秒，拨号的界面才会出现，电话已经拨通了，但是界面却一直卡在打开的原生应用中。<br>这是恶心的问题阿，最后只能直接通过 Safari 打开电话的 URL Scheme，这就导致了每次都会出现一个确认框，用户体验又下降一大截了。  </p>
-<p><img src="http://pic.zhenby.com/Confim.png" alt="Confirmation box">  </p>
+<p><img src="http://o8jwbg5zb.bkt.clouddn.com/Confim.png" alt="Confirmation box">  </p>
 <p>所以在 iOS 7 中，现在的 BLink 只能算个半成品，只是达到勉强可用的状态，希望苹果尽快发布新的 iOS 7 版本，可能修复这些 bug。  </p>
 <h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><p>这件事后，我思考了一下，为什么 BLink 会遇到这样的窘境，我发现是因为 BLink 太依赖 iOS 中原生的其他应用了，整个应用流程不能在 BLink 里面单独完成，在 BLink 中完成一部分操作，跳出 BLink，再在其他地方完成另一部分操作。而依赖越多，那么限制也会越多，毕竟依赖的这部分你是无法控制的。<br>所以我的下个应用，我希望能做一个独立的，拥有完整用户体验的一个应用。  </p>
 
