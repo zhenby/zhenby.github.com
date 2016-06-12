@@ -208,11 +208,123 @@
 
     
     
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/blog/2012/06/07/zai-xcode-zhong-shi-yong-vim/" itemprop="url">
+                  在Xcode中使用vim
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2012-06-07T14:19:00+08:00" content="2012-06-07">
+              2012-06-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/效率/" itemprop="url" rel="index">
+                    <span itemprop="name">效率</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2012/06/07/zai-xcode-zhong-shi-yong-vim/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/06/07/zai-xcode-zhong-shi-yong-vim/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
       
       
 
       
-    
+        
+          
+            <p>从服务端转来做客户端半年时间了，编辑工具也从原来的 vim 转成了 Xcode。在 Xcode 使用正常的编辑模式总觉的不太顺手，特别是对比在 vim 中的查找、替换、复制、粘贴、光标跳转、文件切换等操作；我想让我的手更多的时间是在键盘上，方便我马上可以写代码，而 Xcode 中正常的编辑模式，很多情况下都要进行鼠标点击(也可能是我对 Xcode 的快捷键不熟)。  </p>
+<p>所以就找了 Xcode 的一个 vim插件：<a href="https://github.com/JugglerShu/XVim" target="_blank" rel="external">XVim</a>，<a href="https://github.com/JugglerShu/XVim/blob/master/Documents/Users/FeatureList.md" target="_blank" rel="external">XVim 的使用手册</a> 写了支持的 vim 的命令，支持大部分的 vim 命令，熟悉 vim 的同学可以直接上手就可以再 Xcode 里面用 vim 编辑了。其中一个最好用的命令我觉的就是这个：</p>
+<blockquote>
+<p>Jumps<br>C-o, C-i, gd</p>
+<p>If you want to open the file under the cursor you can use ‘gd’ instead of ‘gf’ in XVim environment.</p>
+</blockquote>
+<p>键入 gd 直接跳转到光标下的类定义文件或者变量定义的地方，而在之前我是使用 command + 鼠标点击 的动作进行跳转的，感觉太麻烦了。  </p>
+<p>使用这个插件，再用上黑底的配色方案，看起来舒服多了。<br><img src="http://ww1.sinaimg.cn/mw690/632302ecgw1dzmaw2filnj.jpg" alt="Xcode-vim"></p>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
 
     
       
@@ -509,7 +621,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">26</span>
+              <span class="site-state-item-count">27</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
