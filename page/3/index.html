@@ -231,6 +231,133 @@
             
               
                 
+                <a class="post-title-link" href="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/" itemprop="url">
+                  剪贴箱V1.1 版本上线了
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-01-11T20:37:00+08:00" content="2013-01-11">
+              2013-01-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/作品/" itemprop="url" rel="index">
+                    <span itemprop="name">作品</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://itunes.apple.com/cn/app/id583710975?mt=8" target="_blank" rel="external">剪贴箱V1.1</a> 版本上线了，这个版本主要新增了一个 直达应用，在解锁图案加密显示密码 跟 清除剪贴板 这三个功能。  </p>
+<p>而直达应用这个功能受启发于一个朋友在微博中的反馈</p>
+<blockquote>
+<p>@Rex-Wanted：回复@夏小蛋:看了简介，有些建议不知道可不可以实现，比如说进去后可以添加应用列表，然后直接在软件里打开需要用的应用，同时已经复制好应该复制的东西这样，而不需手工切换…    </p>
+</blockquote>
+<p>一看到这个意见，有点豁然开朗的感觉，我一直在思考怎么简化这个流程：用户在别的应用中需要一个常用内容 -&gt; 进入剪贴箱复制 -&gt; 切换回之前的应用 -&gt; 粘贴内容。由于苹果在 iOS 中的沙箱限制，第一步与第四步我都无法触及，第一个版本中我主要优化第二步，现在听了朋友的这个建议后，发现，第二步也是有优化空间的：在剪贴箱中复制完内容后，可以让用户方便的跳去别的应用，可以省去用户手动切换应用这一繁琐的步骤。 </p>
+<p><img src="http://ww4.sinaimg.cn/large/632302ecgw1e0pg80ydfwj.jpg" alt="直达应用"></p>
+<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><p>需求有了，但是在 iOS 中应用是无法获取到用户所有安装的应用的，不过可以通过 URL Scheme 的方式检查当前设备是否有安装这个 URL Scheme 的应用，所以我的做法是通过内置一些应用的信息(包括应用名、图标、URL Scheme等)，只有有安装的应用才会显示在直达应用列表中，用户点击了一个应用的图标，就通过 URL Scheme 打开这个应用。</p>
+<h2 id="获取应用的URL-Scheme的方法"><a href="#获取应用的URL-Scheme的方法" class="headerlink" title="获取应用的URL Scheme的方法"></a>获取应用的URL Scheme的方法</h2><ol>
+<li>上这个网站 <a href="http://handleopenurl.com/scheme" target="_blank" rel="external">URL Schemes</a> 查一下相应的 app 的 URL Scheme 是否有被收录；</li>
+<li>第一种方法没找到的话，把相应的 app 的 ipa 安装文件下载下来，把文件 .ipa 的后缀改成 .zip，然后解压，打开 Payload/xxx.app/Info.plist 这个文件，找到 URL types 下的 URL Schemes 下的数组对应的值就是这个 app 的 URL Scheme 了。</li>
+</ol>
+<h2 id="简单验证应用URL-Scheme是否正确的方法"><a href="#简单验证应用URL-Scheme是否正确的方法" class="headerlink" title="简单验证应用URL Scheme是否正确的方法"></a>简单验证应用URL Scheme是否正确的方法</h2><p>在真机设备（此设备要安装了待验证的 app）里面打开 Safari，然后在地址栏中键入应用的 URL Scheme，注意后面要带 <code>://</code>，比如 Gmail 的，在地址栏中键入<code>googlegmail://</code>，然后点击确定，如果能正常调出 Gmail，即代表这个 URL Scheme 正确可用。</p>
+<h2 id="麻烦的苹果自家应用"><a href="#麻烦的苹果自家应用" class="headerlink" title="麻烦的苹果自家应用"></a>麻烦的苹果自家应用</h2><p>苹果自家的应用， App Store、Mail 跟 Safari 这三款应用用到复制内容的可能性比较大，所以我就想在剪贴箱中内置这三款应用。这三款应用虽然都可以使用 URL Scheme 打开这些应用，但是官方文档中提到的都是定义了具体行为的 URL Scheme，比如 Mail 应用的 URL Scheme 是 <code>mailto:</code>，在用户设置了邮箱账号的情况下打开这个 URL Scheme，就调出了发邮件的界面了。但是我应用需要的跳转到一个应用时，还原到应用最小化前的界面。最后这三个应用的处理方案都是不完美的。  </p>
+<h3 id="App-Store"><a href="#App-Store" class="headerlink" title="App Store"></a>App Store</h3><p>App Store 这个应用的 URL Scheme 是 <code>itms-apps://</code>，通过这个 URL Scheme 能打开 App Store，但是却无法还原回用户最小化前的界面。此 URL Scheme 一般被用来打开 App Store 中某一个具体的应用的详情页，或者搜索某个关键字的结果页等等这种有具体行为的操作，如果直接使用<code>itms-apps://</code>或者其他非法的地址打开的话，在 App Store 中会报<code>无法连接到iTunes Store</code>的错误。<br>关于这个问题，查了很多资料，都无法找到解决办法，就一直乱试，终于试到在 iOS 6.0 下使用<code>itms-apps://itunes.apple.com</code>打开时，App Store 能正常打开了，但是只是能打开首页，而且是 tab 没选中下的首页。用户要再点一次 tab 才可以回还原到上次的界面。比如用户在搜索 tab 中搜了一个关键字，并打开了一个应用A的详情，用户再通过剪贴箱打开 App Store 时，会到 App Store 的首页，而用户要点一下<code>搜索</code>这个 tab 才能回到之前应用A相详情的界面。<br>这个效果比报错效果好，找不到其他办法的情况下，就直接用了这种方法了。但是某天在 iOS 5.0.1 的系统下面使用这个<code>itms-apps://itunes.apple.com</code>打开时，先打开了 App Store，载入了一下，又调用出了 iTunes。崩溃了阿！！找来了 iOS 5.1.1 的版本测试了一下，发现又可以跳到 App Store 首页，所以就对 iOS 5.0.1及以下的版本做了处理，直接用 <code>itms-apps://</code> 打开，所以会报一个错误。<br>处理起来没有完美的方案，所以只能先这样处理了，后续想到好的再改进。  </p>
+<h3 id="Mail"><a href="#Mail" class="headerlink" title="Mail"></a>Mail</h3><p>Mail 这个使用<code>mailto:</code>打开，如果用户设备中没设置邮箱账号，那么就会跳到 Mail 最小化前的界面；如果用户设备已经设置了邮箱账号，会直接调用出 Mail 到达发邮箱界面。考虑到用户大部分是在设置邮箱账号的情况下需要剪贴箱的概率大一点，所以就采用这种方式了。</p>
+<h3 id="Safari"><a href="#Safari" class="headerlink" title="Safari"></a>Safari</h3><p>Safari 一定要在<code>http://</code>后面跟上地址，如果不跟的话，直接就会到达一个新建的空白标签页，麻烦，直接把 Safari 去掉，不内置了。  </p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>至于其他第三方的应用我只是简单测试了一下而已，没细测，如果发现有问题可联系我，或者直接在意见反馈里面反馈给我就可以了。<br>这个版本要特别感谢<a href="http://weibo.com/u/1761180747" target="_blank" rel="external">@Rex-Wanted</a>、<a href="http://weibo.com/bang" target="_blank" rel="external">@bang</a> 跟 <a href="http://weibo.com/qixianjie" target="_blank" rel="external">@Mr大表</a> 提的产品建议，特别给力。<br>对了，在解锁图案界面，右滑剪贴板内容，可以清除剪贴板哦，怕剪贴板泄露了你的密码可以把剪贴板清除。  </p>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/blog/2013/01/05/yin-xiang-ji-long-po/" itemprop="url">
                   在吉隆坡遇见的一些人
                 </a>
@@ -1125,133 +1252,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/blog/2012/07/25/xue-che-bei-nue-ji/" itemprop="url">
-                  学车被虐记
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2012-07-25T11:59:00+08:00" content="2012-07-25">
-              2012-07-25
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/生活/" itemprop="url" rel="index">
-                    <span itemprop="name">生活</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/blog/2012/07/25/xue-che-bei-nue-ji/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2012/07/25/xue-che-bei-nue-ji/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>去年毕业前，大约2011年4月份的时候就报名学车了，过程太艰苦了，直到今天才真正学完。</p>
-<h2 id="被迫买烟"><a href="#被迫买烟" class="headerlink" title="被迫买烟"></a>被迫买烟</h2><p>一开始，跟了一个烂教练（发现大部分教练都这么的烂），教你开车的时候各种骂，好像欠他很多钱一样；<br>11年8月份的时候去考倒桩，考试完后还要叫我们买烟给他，那时候的情景是这样的：<br>我们两个考生去考倒桩，都考过了，然后在回去的路上，他突然停下来，  </p>
-<p>对我们说：“你们两个，每个人去买包烟，给那个…他只抽五叶神的哦，红色硬盒的那种”。  </p>
-<p>尼玛，“那个”是哪个啊，那种烟一包21块，而且都考完试了，这不明摆着要我们买给他抽的嘛。<br>那个时候很不爽，就在车里拍了个张照（木有人露脸的，只有那包烟），上传到微博上骂了他一下。  </p>
-<h2 id="换教练"><a href="#换教练" class="headerlink" title="换教练"></a>换教练</h2><p>在这个烂教练下面考过了九选三、长途，长途我2012年过年前就考完了，但是一直等到2012年的5月份都还没叫我去练车，一直也没怎么理。<br>直到有一天，那个驾校的总教练打电话给我，说：“网上的那个照片是你发的吗？能不能把它删了。”  </p>
-<p>一开始我还不知道他在说啥，后来才想起我发过那照片，我说：“我微博很少人看啊，那照片也很少人转啊。”   </p>
-<p>“被我知道他叫你们买烟，我也会骂他，但是现在整班人都知道了，现在很多学生来学车，都指明不要那个Y教练”  </p>
-<p>不想生事，我还想拿驾照的呢，所以就答应删了，不过也让他帮我换教练了，不然肯定会被那个教练虐的更惨。<br>ps.被驾校知道了教练叫人买烟“孝敬”他，也不处罚，只是受总教练一骂而已。   </p>
-<p>然后就换了个也是很 SB 的教练，不给人问问题，不给人顶嘴，他说的就要照做。<br>有一次，他在说怎么靠边停车，<br>我就提了个问题：“靠边停车的时候，一直要看着右边的后视镜，除了看后面有没有车外，是不是还可以看一下有没有停到位啊？”<br>“你问这样的问题是不是要找骂啊，我刚才有说过这个吗？没有你乱问什么。”<br>-。- 这样的人也可以当教练，一点师德都没有。    </p>
-<h2 id="两次路考"><a href="#两次路考" class="headerlink" title="两次路考"></a>两次路考</h2><p>考路面的时候因为 方向盘不稳 跟 没看后视镜 挂了一次，考官心情不好，先把我们教练骂了一顿，然后又让我们车里面的四个都挂了。<br>今天第二次考，终于遇到个好考官，我再转弯的时候忘了打灯，但是看我开的比较熟，比较稳，还是让我过了。  </p>
-<h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><ul>
-<li>学个车很浪费时间，大学的时候有很多时间，可以去浪费浪费，工作了学起来就麻烦了，周末的休息时间都没了。  </li>
-<li>遇到的教练都是烂教练，刚入行的教练还会好一点，对你客气一点。  </li>
-<li>教练都是一群心理变态加没事找事骂你的人，你就把他们当笑话看就行了。  </li>
-<li>去学校的驾校学比较好，比较正规，我路考补考费140，而在其他驾校学的同事都要200，或者300。  </li>
-<li>路考很大程度看运气，看能不能遇到个好考官，好路况，好路段；今天同考的一个女生，学了三节课，遇到个好路段，过了；第二次考的另一个女生，路段跟路况都比较复杂，这次还是挂了。</li>
-</ul>
-<p>感叹一下，驾校教练这个行业，什么时候可以整顿一下，这么差的教学态度，一切的教学都是为了考试的“教学理念”。<br>什么时候才会有好教练平心静气的、耐心的教你开车？现在学车真的是太苦太苦太苦啦。。</p>
-
-          
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -1298,7 +1298,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-count">28</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

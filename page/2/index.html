@@ -231,6 +231,129 @@
             
               
                 
+                <a class="post-title-link" href="/blog/2013/10/10/blink-support-ios-7-now/" itemprop="url">
+                  BLink V1.5 兼容iOS 7了
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2013-10-10T17:25:00+08:00" content="2013-10-10">
+              2013-10-10
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/作品/" itemprop="url" rel="index">
+                    <span itemprop="name">作品</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/blog/2013/10/10/blink-support-ios-7-now/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/10/10/blink-support-ios-7-now/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://o8jwbg5zb.bkt.clouddn.com/BLink-iOS7.png" alt="BLink in iOS 7">  </p>
+<h2 id="之前为什么不兼容-iOS-7"><a href="#之前为什么不兼容-iOS-7" class="headerlink" title="之前为什么不兼容 iOS 7"></a>之前为什么不兼容 iOS 7</h2><p>我在上一篇博客<a href="http://zhenby.com/blog/2013/09/12/blink/">第一个收费应用-BLink</a>中提到过，BLink 不兼容 iOS 7 是因为 iOS 7 的 bug，那时候因为 iOS 7 还在测试阶段，因为 NDA 的原因，我没细说那个 bug：  </p>
+<blockquote>
+<p>在 iOS 7 中，在 Web App 的全屏模式下（standlone），所有会离开当前浏览会话的 JS 执行都无效。比如，在全屏模式下，执行一个 JS 的 alert 语句无效，使用 JS 打开一个应用的 URL Scheme 也会无效。  </p>
+</blockquote>
+<p>因为 BLink 的快捷方式实际上就是一个桌面书签，会通过是否全屏模式做不同的操作：非全屏模式下，提示用户添加书签到桌面上；全屏模式下，直接打开一个 URL Scheme。<br>因为 iOS 7 的这个 bug，在全屏模式下打开一个应用的 URL Scheme 无效了，所以 BLink 在 iOS 7 下的快捷方式打开后只会是一个白屏。  </p>
+<h2 id="别对苹果修-bug-抱太大希望，要有-Plan-B"><a href="#别对苹果修-bug-抱太大希望，要有-Plan-B" class="headerlink" title="别对苹果修 bug 抱太大希望，要有 Plan B"></a>别对苹果修 bug 抱太大希望，要有 Plan B</h2><p>这个 bug 从 iOS 7 测试版本就一直存在，具体从 beta 几开始我没测试，我从 iOS 7 beta 4 开始试用 iOS 7，就发现了这个 bug，我一直认为现在是 iOS 7 的测试版本，有 bug 很正常，看到苹果开发者论坛上也有人已经报 bug 给苹果了，所以我是幻想着苹果能在 iOS 7 正式版本之前解决这个 bug 的。<br>但是到了 beta 6，再到9月10号苹果发布会后发布的 GM版，这个 bug 还是一直存在。<br>我这个时候还是幻想着苹果能在正式版的时候解决这个 bug，毕竟这是个大问题阿，所有全屏 Web App 都会受影响，连 alert 都 alert 不了。<br>所以在这段 iOS 7 测试版本期间，我没有做任何的行动，也没想好一直幻想着正式版本能正常工作。<br>但是在9月18号的时候，iOS 7 正式版发布，我测试后，问题依旧阿。我X，而且发现正式版根本就是 GM 版，一个星期一个问题都没解决阿，顿时对苹果失望至极。  </p>
+<p>因为之前对苹果修 bug 抱太大希望，我根本没考虑 Plan B，所以正式版发布后，一天几个一星差评，几封反馈的邮件。<br>这是教训阿，以后对这种大版本的更新，在最后的 GM 版本，如果还有问题，就应该尽快想 Plan B，并尽快上线新版本，并且，再加根据系统版本的远程开关，这样即使正式版本修复了，也可以远程控制是否启用 Plan B。  </p>
+<h2 id="怎么解决的"><a href="#怎么解决的" class="headerlink" title="怎么解决的"></a>怎么解决的</h2><p>解决的过程比较曲折，我尝试了使用 Local Storage 以及 Web SQL Database 来保存「是否将快捷方式添加到桌面」的标识，由于我的快捷方式的书签地址为 data:text/html 类型的，都无法使用 Local Storeage 及 Web SQL Database。<br>一开始一筹莫展，想不到好的办法解决，最后参考了一个同类型的 App，他们是使用安装「描述文件」的方式来生成桌面快捷方式。这种方式我一开始是抗拒的，因为用户不了解什么是描述文件，也不确定安装完后会不会对设备造成其他影响，而且由于我没买电子签名证书，所以我生成的描述文件在设备上安装时，会显示「未签名」的，这也会让用户疑惑。但是实在找不到其他的解决办法，最后只能在安装过程中提示用户「安装此描述文件只会在你的设备主屏幕上添加一个快捷方式，不会修改你设备上的任何设置，所以无需担心描述文件未签名的问题。」  </p>
+<p><img src="http://o8jwbg5zb.bkt.clouddn.com/Profile.png" alt="Install the Profile">  </p>
+<p>然后，解决了这个问题后，我又发现了一个 bug，在 iOS 7 中，从原生的应用中尝试打开电话的 URL Scheme 时，会卡个10秒，拨号的界面才会出现，电话已经拨通了，但是界面却一直卡在打开的原生应用中。<br>这是恶心的问题阿，最后只能直接通过 Safari 打开电话的 URL Scheme，这就导致了每次都会出现一个确认框，用户体验又下降一大截了。  </p>
+<p><img src="http://o8jwbg5zb.bkt.clouddn.com/Confim.png" alt="Confirmation box">  </p>
+<p>所以在 iOS 7 中，现在的 BLink 只能算个半成品，只是达到勉强可用的状态，希望苹果尽快发布新的 iOS 7 版本，可能修复这些 bug。  </p>
+<h2 id="感受"><a href="#感受" class="headerlink" title="感受"></a>感受</h2><p>这件事后，我思考了一下，为什么 BLink 会遇到这样的窘境，我发现是因为 BLink 太依赖 iOS 中原生的其他应用了，整个应用流程不能在 BLink 里面单独完成，在 BLink 中完成一部分操作，跳出 BLink，再在其他地方完成另一部分操作。而依赖越多，那么限制也会越多，毕竟依赖的这部分你是无法控制的。<br>所以我的下个应用，我希望能做一个独立的，拥有完整用户体验的一个应用。  </p>
+
+          
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/blog/2013/09/12/blink/" itemprop="url">
                   第一个收费App——BLink
                 </a>
@@ -1244,133 +1367,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/" itemprop="url">
-                  剪贴箱V1.1 版本上线了
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2013-01-11T20:37:00+08:00" content="2013-01-11">
-              2013-01-11
-            </time>
-          </span>
-
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/作品/" itemprop="url" rel="index">
-                    <span itemprop="name">作品</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                &nbsp; | &nbsp;
-                <a href="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="/blog/2013/01/11/jian-tie-xiang-v1-dot-1-ban-ben-shang-xian-liao/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-
-          
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://itunes.apple.com/cn/app/id583710975?mt=8" target="_blank" rel="external">剪贴箱V1.1</a> 版本上线了，这个版本主要新增了一个 直达应用，在解锁图案加密显示密码 跟 清除剪贴板 这三个功能。  </p>
-<p>而直达应用这个功能受启发于一个朋友在微博中的反馈</p>
-<blockquote>
-<p>@Rex-Wanted：回复@夏小蛋:看了简介，有些建议不知道可不可以实现，比如说进去后可以添加应用列表，然后直接在软件里打开需要用的应用，同时已经复制好应该复制的东西这样，而不需手工切换…    </p>
-</blockquote>
-<p>一看到这个意见，有点豁然开朗的感觉，我一直在思考怎么简化这个流程：用户在别的应用中需要一个常用内容 -&gt; 进入剪贴箱复制 -&gt; 切换回之前的应用 -&gt; 粘贴内容。由于苹果在 iOS 中的沙箱限制，第一步与第四步我都无法触及，第一个版本中我主要优化第二步，现在听了朋友的这个建议后，发现，第二步也是有优化空间的：在剪贴箱中复制完内容后，可以让用户方便的跳去别的应用，可以省去用户手动切换应用这一繁琐的步骤。 </p>
-<p><img src="http://ww4.sinaimg.cn/large/632302ecgw1e0pg80ydfwj.jpg" alt="直达应用"></p>
-<h2 id="实现方案"><a href="#实现方案" class="headerlink" title="实现方案"></a>实现方案</h2><p>需求有了，但是在 iOS 中应用是无法获取到用户所有安装的应用的，不过可以通过 URL Scheme 的方式检查当前设备是否有安装这个 URL Scheme 的应用，所以我的做法是通过内置一些应用的信息(包括应用名、图标、URL Scheme等)，只有有安装的应用才会显示在直达应用列表中，用户点击了一个应用的图标，就通过 URL Scheme 打开这个应用。</p>
-<h2 id="获取应用的URL-Scheme的方法"><a href="#获取应用的URL-Scheme的方法" class="headerlink" title="获取应用的URL Scheme的方法"></a>获取应用的URL Scheme的方法</h2><ol>
-<li>上这个网站 <a href="http://handleopenurl.com/scheme" target="_blank" rel="external">URL Schemes</a> 查一下相应的 app 的 URL Scheme 是否有被收录；</li>
-<li>第一种方法没找到的话，把相应的 app 的 ipa 安装文件下载下来，把文件 .ipa 的后缀改成 .zip，然后解压，打开 Payload/xxx.app/Info.plist 这个文件，找到 URL types 下的 URL Schemes 下的数组对应的值就是这个 app 的 URL Scheme 了。</li>
-</ol>
-<h2 id="简单验证应用URL-Scheme是否正确的方法"><a href="#简单验证应用URL-Scheme是否正确的方法" class="headerlink" title="简单验证应用URL Scheme是否正确的方法"></a>简单验证应用URL Scheme是否正确的方法</h2><p>在真机设备（此设备要安装了待验证的 app）里面打开 Safari，然后在地址栏中键入应用的 URL Scheme，注意后面要带 <code>://</code>，比如 Gmail 的，在地址栏中键入<code>googlegmail://</code>，然后点击确定，如果能正常调出 Gmail，即代表这个 URL Scheme 正确可用。</p>
-<h2 id="麻烦的苹果自家应用"><a href="#麻烦的苹果自家应用" class="headerlink" title="麻烦的苹果自家应用"></a>麻烦的苹果自家应用</h2><p>苹果自家的应用， App Store、Mail 跟 Safari 这三款应用用到复制内容的可能性比较大，所以我就想在剪贴箱中内置这三款应用。这三款应用虽然都可以使用 URL Scheme 打开这些应用，但是官方文档中提到的都是定义了具体行为的 URL Scheme，比如 Mail 应用的 URL Scheme 是 <code>mailto:</code>，在用户设置了邮箱账号的情况下打开这个 URL Scheme，就调出了发邮件的界面了。但是我应用需要的跳转到一个应用时，还原到应用最小化前的界面。最后这三个应用的处理方案都是不完美的。  </p>
-<h3 id="App-Store"><a href="#App-Store" class="headerlink" title="App Store"></a>App Store</h3><p>App Store 这个应用的 URL Scheme 是 <code>itms-apps://</code>，通过这个 URL Scheme 能打开 App Store，但是却无法还原回用户最小化前的界面。此 URL Scheme 一般被用来打开 App Store 中某一个具体的应用的详情页，或者搜索某个关键字的结果页等等这种有具体行为的操作，如果直接使用<code>itms-apps://</code>或者其他非法的地址打开的话，在 App Store 中会报<code>无法连接到iTunes Store</code>的错误。<br>关于这个问题，查了很多资料，都无法找到解决办法，就一直乱试，终于试到在 iOS 6.0 下使用<code>itms-apps://itunes.apple.com</code>打开时，App Store 能正常打开了，但是只是能打开首页，而且是 tab 没选中下的首页。用户要再点一次 tab 才可以回还原到上次的界面。比如用户在搜索 tab 中搜了一个关键字，并打开了一个应用A的详情，用户再通过剪贴箱打开 App Store 时，会到 App Store 的首页，而用户要点一下<code>搜索</code>这个 tab 才能回到之前应用A相详情的界面。<br>这个效果比报错效果好，找不到其他办法的情况下，就直接用了这种方法了。但是某天在 iOS 5.0.1 的系统下面使用这个<code>itms-apps://itunes.apple.com</code>打开时，先打开了 App Store，载入了一下，又调用出了 iTunes。崩溃了阿！！找来了 iOS 5.1.1 的版本测试了一下，发现又可以跳到 App Store 首页，所以就对 iOS 5.0.1及以下的版本做了处理，直接用 <code>itms-apps://</code> 打开，所以会报一个错误。<br>处理起来没有完美的方案，所以只能先这样处理了，后续想到好的再改进。  </p>
-<h3 id="Mail"><a href="#Mail" class="headerlink" title="Mail"></a>Mail</h3><p>Mail 这个使用<code>mailto:</code>打开，如果用户设备中没设置邮箱账号，那么就会跳到 Mail 最小化前的界面；如果用户设备已经设置了邮箱账号，会直接调用出 Mail 到达发邮箱界面。考虑到用户大部分是在设置邮箱账号的情况下需要剪贴箱的概率大一点，所以就采用这种方式了。</p>
-<h3 id="Safari"><a href="#Safari" class="headerlink" title="Safari"></a>Safari</h3><p>Safari 一定要在<code>http://</code>后面跟上地址，如果不跟的话，直接就会到达一个新建的空白标签页，麻烦，直接把 Safari 去掉，不内置了。  </p>
-<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>至于其他第三方的应用我只是简单测试了一下而已，没细测，如果发现有问题可联系我，或者直接在意见反馈里面反馈给我就可以了。<br>这个版本要特别感谢<a href="http://weibo.com/u/1761180747" target="_blank" rel="external">@Rex-Wanted</a>、<a href="http://weibo.com/bang" target="_blank" rel="external">@bang</a> 跟 <a href="http://weibo.com/qixianjie" target="_blank" rel="external">@Mr大表</a> 提的产品建议，特别给力。<br>对了，在解锁图案界面，右滑剪贴板内容，可以清除剪贴板哦，怕剪贴板泄露了你的密码可以把剪贴板清除。  </p>
-
-          
-        
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
 
   </section>
 
@@ -1417,7 +1413,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">27</span>
+              <span class="site-state-item-count">28</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
