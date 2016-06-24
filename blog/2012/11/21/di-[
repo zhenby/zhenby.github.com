@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Sport, Running, Marathon," />
+  <meta name="keywords" content="跑步,马拉松," />
 
 
 
@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="zhenby's blog">
 <meta property="og:description" content="11月18号的时候参加了广州国际马拉松，第一次跑10km，顺利完成，成绩56’50。
 报名报名比较曲折。11月初的时候在微博上看到有这个赛事，看到了有10km 的项目，就想试试。登录进去报名网站里面想报名，发现名额全满了。然后在11月13号的时候，@Nike广州 发了个微博，说前一百回复的可以报名参加广州马拉松5km 项目，马上就回复参加了。在前一天 Nike 才发信息来通知报名成功，然后去领号码">
-<meta property="og:updated_time" content="2016-02-25T10:11:40.000Z">
+<meta property="og:updated_time" content="2016-06-24T17:43:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="第一次10km跑">
 <meta name="twitter:description" content="11月18号的时候参加了广州国际马拉松，第一次跑10km，顺利完成，成绩56’50。
@@ -319,7 +319,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Sport-Running-Marathon/" rel="tag">#Sport, Running, Marathon</a>
+            <a href="/tags/跑步/" rel="tag">#跑步</a>
+          
+            <a href="/tags/马拉松/" rel="tag">#马拉松</a>
           
         </div>
       
@@ -427,7 +429,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">35</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>

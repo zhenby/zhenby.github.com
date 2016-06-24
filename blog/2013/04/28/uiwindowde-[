@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="iOS,UIWindow,UIWebView,Keyboard," />
+  <meta name="keywords" content="iOS," />
 
 
 
@@ -72,7 +72,7 @@
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png">
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%889.56.31.png">
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png">
-<meta property="og:updated_time" content="2016-02-25T09:52:24.000Z">
+<meta property="og:updated_time" content="2016-06-24T17:54:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UIWindow的一个兼容性问题">
 <meta name="twitter:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
@@ -332,7 +332,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/iOS-UIWindow-UIWebView-Keyboard/" rel="tag">#iOS,UIWindow,UIWebView,Keyboard</a>
+            <a href="/tags/iOS/" rel="tag">#iOS</a>
           
         </div>
       
@@ -440,7 +440,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">23</span>
+                <span class="site-state-item-count">35</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
