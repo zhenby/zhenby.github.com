@@ -1,0 +1,34 @@
+<html>
+    <head>
+    </head>
+    <body id='body'>
+        <script>
+            var e = document.createElement("script");
+            e.type = "text/javascript";
+            e.src = "https://acstatic-dun.126.net/tool.min.js";
+            document.getElementsByTagName("head")[0].appendChild(e);
+            var t = setInterval(function() {
+                if (window.initWatchman) {
+                    window.initWatchman({
+                        productNumber: "YD00000690443311",
+                        onload: function(e) {
+                            e.getToken("05d4bed691944e5ca49c96eb945e1c12",
+                                                    function(clientToken) {
+                                                        console.log('body:' + document.getElementById("body"));
+                                                        document.getElementById("body").innerHTML = clientToken;
+                            })
+                        },
+                        __serverConfig__: {
+                            configServer: "webzjac.reg.163.com",
+                            apiServer: "webzjac.reg.163.com",
+                            staticServer: "acstatic-dun.126.net"
+                        }
+                });
+                t = clearInterval(t)
+            }
+        },
+        100)
+        </script>
+    </body>
+
+</html>
