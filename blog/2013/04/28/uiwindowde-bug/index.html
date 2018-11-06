@@ -6,19 +6,15 @@
 
 
 <html class="theme-next mist use-motion">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
-
-
-
-
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -27,7 +23,11 @@
 
 
 
-  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -36,49 +36,43 @@
 
 
 
-<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
-
-
-  <meta name="keywords" content="iOS," />
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css">
 
 
+  <meta name="keywords" content="iOS,">
 
 
 
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0" />
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=0.5.0">
 
 
 
 
 
 
-<meta name="description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
-问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
-前提
-项目中使用了另一个 UIWindow (在这">
+<meta name="description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。   问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。 前提 项目中使用了另一个 UIWindow (在这">
+<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UIWindow的一个兼容性问题">
 <meta property="og:url" content="http://zhenby.com/blog/2013/04/28/uiwindowde-bug/index.html">
-<meta property="og:site_name" content="zhenby's blog">
-<meta property="og:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
-问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
-前提
-项目中使用了另一个 UIWindow (在这">
+<meta property="og:site_name" content="zhenby&#39;s blog">
+<meta property="og:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。   问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。 前提 项目中使用了另一个 UIWindow (在这">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png">
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%889.56.31.png">
 <meta property="og:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png">
 <meta property="og:updated_time" content="2016-06-24T17:54:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UIWindow的一个兼容性问题">
-<meta name="twitter:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。  
-问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。
-前提
-项目中使用了另一个 UIWindow (在这">
+<meta name="twitter:description" content="最近发现了一个奇怪的 UIWindow 的兼容性问题，通过一种比较取巧的方式解决了，如果你有更好的解决办法，请在回复中告诉我。   问题描述如果应用中使用了额外的 UIWindow，并且此 UIWindow 中包含了 UIWebView，那么在iOS 5.1或者以下的系统版本中，可能会出现在 UIWebView中触发键盘时，键盘处于不可见的状态。 前提 项目中使用了另一个 UIWindow (在这">
+<meta name="twitter:image" content="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.45.png">
 
 
 
@@ -99,7 +93,7 @@
   <title> UIWindow的一个兼容性问题 | zhenby's blog </title>
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
 
@@ -127,12 +121,12 @@
   <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-meta ">
   
 
   <div class="custom-logo-site-title">
-    <a href="/"  class="brand" rel="start">
+    <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
       <span class="site-title">zhenby's blog</span>
       <span class="logo-line-after"><i></i></span>
@@ -159,7 +153,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br>
             
             首页
           </a>
@@ -169,7 +163,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives" rel="section">
             
-              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br>
             
             归档
           </a>
@@ -179,7 +173,7 @@
         <li class="menu-item menu-item-iread">
           <a href="/iread" rel="section">
             
-              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br />
+              <i class="menu-item-icon fa fa-question-circle fa-fw"></i> <br>
             
             我读
           </a>
@@ -189,7 +183,7 @@
         <li class="menu-item menu-item-about">
           <a href="/about" rel="section">
             
-              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br>
             
             关于
           </a>
@@ -224,7 +218,7 @@
   
   
 
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal " itemscope="" itemtype="http://schema.org/Article">
 
     
       <header class="post-header">
@@ -253,14 +247,14 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
               &nbsp; | &nbsp;
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
               
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                <span itemprop="about" itemscope="" itemtype="https://schema.org/Thing">
                   <a href="/categories/编程技术/" itemprop="url" rel="index">
                     <span itemprop="name">编程技术</span>
                   </a>
@@ -316,14 +310,14 @@
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>上 google 搜了很久，给出的解决方案都是说没把 HighLevelWindow 设置成应用的 KeyWindow，导致接收不到屏幕的触摸事件，但是从 google 网页上推可以看出，其实 HighLevelWindow 是可以接收到触摸事件的，而且我已经确定把 HightLevelWindow 设置成应用的 KeyWindow 了。  </p>
 <p>现在的症状就是键盘在默认的 UIWindow 中触发过后，在 HinhLevelWindow 中再次触发，键盘其实是被挡在了 HighLevelWindow 后面，处于不可见，不可点击的状态。(此症状可通过将 HighLevelWindow 的 frame.size 设置成只有屏幕一半大小来确定)  </p>
 <p>尝试了各种方法，都是不行的，而且从 iOS 6.0 开始，此 bug 是不存在的，那更可以确定是一个兼容性的问题了。</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>我突然想起，就在之前项目还没改用 UIWebView 前，使用一般的 UITextField 输入框是可以正常的显示键盘的，于是，就有以下这种取巧的解决方案：<br><strong>在包含了 UIWebView 的 UIViewController 显示时(<code>viewDidAppear:</code> 方法调用时)，插入一个 UITextField，迅速的获取焦点，然后取消焦点，删除此 UITextFiled </strong>，关键代码如下：<br><figure class="highlight objc"><figcaption><span>- FixedBugWindowViewController.m</span></figcaption><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line">	    </span><br><span class="line">	<span class="comment">// 在系统版本低于 iOS 6.0 时才做此操作</span></span><br><span class="line">	<span class="keyword">if</span> ([[[<span class="built_in">UIDevice</span> currentDevice] systemVersion] floatValue] &lt; <span class="number">6.0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 新建一个 UITextField，并添加到视图中</span></span><br><span class="line">		<span class="built_in">UITextField</span> *textFieldFixKeyBoardBug = [[<span class="built_in">UITextField</span> alloc] initWithFrame:<span class="keyword">self</span>.view.bounds];</span><br><span class="line">		[<span class="keyword">self</span>.view addSubview:textFieldFixKeyBoardBug];</span><br><span class="line">								        </span><br><span class="line">		<span class="comment">// 获取焦点，释放焦点</span></span><br><span class="line">		[textFieldFixKeyBoardBug becomeFirstResponder];</span><br><span class="line">		[textFieldFixKeyBoardBug resignFirstResponder];</span><br><span class="line">														        </span><br><span class="line">		<span class="comment">// 将 UITextField 从视图中移除，并释放</span></span><br><span class="line">		[textFieldFixKeyBoardBug removeFromSuperview];</span><br><span class="line">		[textFieldFixKeyBoardBug release];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>我突然想起，就在之前项目还没改用 UIWebView 前，使用一般的 UITextField 输入框是可以正常的显示键盘的，于是，就有以下这种取巧的解决方案：<br><strong>在包含了 UIWebView 的 UIViewController 显示时(<code>viewDidAppear:</code> 方法调用时)，插入一个 UITextField，迅速的获取焦点，然后取消焦点，删除此 UITextFiled </strong>，关键代码如下：<br><figure class="highlight objc"><figcaption><span>- FixedBugWindowViewController.m</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidAppear:(<span class="built_in">BOOL</span>)animated</span><br><span class="line">&#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidAppear:animated];</span><br><span class="line">	    </span><br><span class="line">	<span class="comment">// 在系统版本低于 iOS 6.0 时才做此操作</span></span><br><span class="line">	<span class="keyword">if</span> ([[[<span class="built_in">UIDevice</span> currentDevice] systemVersion] floatValue] &lt; <span class="number">6.0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">// 新建一个 UITextField，并添加到视图中</span></span><br><span class="line">		<span class="built_in">UITextField</span> *textFieldFixKeyBoardBug = [[<span class="built_in">UITextField</span> alloc] initWithFrame:<span class="keyword">self</span>.view.bounds];</span><br><span class="line">		[<span class="keyword">self</span>.view addSubview:textFieldFixKeyBoardBug];</span><br><span class="line">								        </span><br><span class="line">		<span class="comment">// 获取焦点，释放焦点</span></span><br><span class="line">		[textFieldFixKeyBoardBug becomeFirstResponder];</span><br><span class="line">		[textFieldFixKeyBoardBug resignFirstResponder];</span><br><span class="line">														        </span><br><span class="line">		<span class="comment">// 将 UITextField 从视图中移除，并释放</span></span><br><span class="line">		[textFieldFixKeyBoardBug removeFromSuperview];</span><br><span class="line">		[textFieldFixKeyBoardBug release];</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <p>加上以上代码后，可以正常的显示键盘了。</p>
 <p><img src="http://zhenbyphoto-wordpress.stor.sinaapp.com/uploads/2013/04/iOS-Simulator-Screen-shot-2013-4-28-%E4%B8%8B%E5%8D%8810.55.31.png" alt="可正常显示键盘"></p>
 <h2 id="不单单是UIWebView，不单单是键盘"><a href="#不单单是UIWebView，不单单是键盘" class="headerlink" title="不单单是UIWebView，不单单是键盘"></a>不单单是UIWebView，不单单是键盘</h2><ul>
 <li>不单单是 UIWebView，我在使用 MFMessageComposeViewController 时也遇过这个问题，类似的 MFMailComposeViewController 应该也会出现这个问题，可以使用相同的方法修复</li>
 <li>不单单是键盘，在 UIWebView 中，页面有一个下拉框，会显示一个 UIPickerView，此 UIPickerView 也处于被隐藏，不可见的状态，也可以使用此方法修复</li>
 </ul>
-<h2 id="Demo源码"><a href="#Demo源码" class="headerlink" title="Demo源码"></a>Demo源码</h2><p>Demo源码地址：<a href="https://github.com/zhenby/UIWindowKeyboardBug" target="_blank" rel="external">https://github.com/zhenby/UIWindowKeyboardBug</a></p>
+<h2 id="Demo源码"><a href="#Demo源码" class="headerlink" title="Demo源码"></a>Demo源码</h2><p>Demo源码地址：<a href="https://github.com/zhenby/UIWindowKeyboardBug" target="_blank" rel="noopener">https://github.com/zhenby/UIWindowKeyboardBug</a></p>
 
       
     </div>
@@ -377,8 +371,7 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="/blog/2013/04/28/uiwindowde-bug/"
-           data-title="UIWindow的一个兼容性问题" data-url="http://zhenby.com//blog/2013/04/28/uiwindowde-bug/">
+      <div class="ds-thread" data-thread-key="/blog/2013/04/28/uiwindowde-bug/" data-title="UIWindow的一个兼容性问题" data-url="http://zhenby.com/blog/2013/04/28/uiwindowde-bug/">
       </div>
     
   </div>
@@ -403,7 +396,7 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
           <li class="sidebar-nav-overview" data-target="site-overview">
@@ -413,10 +406,8 @@
       
 
       <section class="site-overview sidebar-panel ">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-          <img class="site-author-image" itemprop="image"
-               src="/images/default_avatar.jpg"
-               alt="zhenby" />
+        <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/default_avatar.jpg" alt="zhenby">
           <p class="site-author-name" itemprop="name">zhenby</p>
           <p class="site-description motion-element" itemprop="description"></p>
         </div>
@@ -440,7 +431,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">12</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
@@ -492,10 +483,10 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
+        <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2016</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
