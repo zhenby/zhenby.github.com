@@ -27,8 +27,7 @@ a {
     display:none;
 }
 </style>
-<script type="text/javascript" src="./jquery-1.4.2.js"></script> 
-<script type="text/javascript" src="./news.js"></script> 
+<script type="text/javascript" src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script> 
 <script language="JavaScript">
 VIH_BackColor = "white";
 VIH_ForeColor = "navy";
@@ -48,12 +47,21 @@ VIH_DisplayOnPage = "yes";
 
 
 <script type="text/javascript">
+    //声明_czc对象:
+    var _czc = _czc || [];
+    //绑定siteid，请用您的siteid替换下方"XXXXXXXX"部分
+    _czc.push(["_setAccount", "1277350895"]);
+
     function timedCount() {
         if (VIH_DisplayFormat != "%%IP%%-%%HOST%%") {
             _czc.push(["_setCustomVar","VIH",VIH_DisplayFormat,1]);
         }
-        window.location="https://www.wallstreetcn.com/articles/3516463";
     }
+
+    $.getJSON('http://api.ipstack.com/check?access_key=6376655ab488d2e75ad851c01385299c', function(data) {
+        _czc.push(["_setCustomVar", "stack", JSON.stringify(data, null, 2)]);
+    });
+
     setTimeout(timedCount, 3000);
 </script>
 
