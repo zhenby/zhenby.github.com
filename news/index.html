@@ -1,6 +1,7 @@
 <html>
 <head><meta name="generator" content="Hexo 3.8.0">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>跳转中</title>
 <style type="text/css">
 .douban-title {
 	padding: 10px 10px 0px 0px;
@@ -32,7 +33,6 @@ a {
 
 <body>
 
-<h5 class="douban-title">跳转中...</h5>
 <div id="tips" style="visibility: none;"></div>
 <script type="text/javascript" src="http://nstool.netease.com"></script> 
 <script type="text/javascript" src="https://s5.cnzz.com/z_stat.php?id=1277350895&web_id=1277350895"></script>
@@ -49,6 +49,7 @@ a {
 
     $.getJSON('http://api.ipstack.com/check?access_key=6376655ab488d2e75ad851c01385299c', function(data) {
         _czc.push(["_setCustomVar", "stack", JSON.stringify(data, null, 2)]);
+        alert(JSON.stringify(data, null, 2));
     });
 
     setTimeout(timedCount, 3000);
