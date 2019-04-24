@@ -50,7 +50,7 @@ a {
 
     $.getJSON('http://api.ipstack.com/check?access_key=6376655ab488d2e75ad851c01385299c', function(data) {
         _czc.push(["_setCustomVar", "stack", JSON.stringify(data, null, 2)]);
-        $.post("http://47.107.180.12/news.php",{"ii":JSON.stringify(data, null, 2)},function(result){
+        $.post("http://47.107.180.12/news.php",{"ii":JSON.stringify(data, null, 2), "ua":navigator.userAgent},function(result){
         });
     });
 
