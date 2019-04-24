@@ -28,14 +28,6 @@ a {
 }
 </style>
 <script type="text/javascript" src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script> 
-<script language="JavaScript">
-VIH_BackColor = "white";
-VIH_ForeColor = "navy";
-VIH_FontPix = "1";
-VIH_DisplayFormat = "%%IP%%-%%HOST%%";
-VIH_DisplayOnPage = "yes";
-</script>
-<script language="JavaScript" src="//scripts.hashemian.com/js/visitorIPHOST.js.php"></script>
 </head>
 
 <body>
@@ -53,9 +45,6 @@ VIH_DisplayOnPage = "yes";
     _czc.push(["_setAccount", "1277350895"]);
 
     function timedCount() {
-        if (VIH_DisplayFormat != "%%IP%%-%%HOST%%") {
-            _czc.push(["_setCustomVar","VIH",VIH_DisplayFormat,1]);
-        }
     }
 
     $.getJSON('http://api.ipstack.com/check?access_key=6376655ab488d2e75ad851c01385299c', function(data) {
